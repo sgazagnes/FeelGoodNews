@@ -1,0 +1,6 @@
+Flask
+flask-cors
+requests
+feedparser
+Pillow
+openai
