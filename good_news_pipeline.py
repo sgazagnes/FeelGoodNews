@@ -195,12 +195,12 @@ class LLMAnalyzer:
             return None
         
         try:
-            print(f"🎨 Generating image with prompt: {prompt[:100]}...")
+            print(f"🎨 Generating image with prompt: {prompt[:200]}...")
             
             response = self.client.images.generate(
                 model="dall-e-3",
                 prompt=prompt,
-                size="1024x1024",
+                size="512x512",
                 quality="standard",
                 n=1,
             )
@@ -216,9 +216,9 @@ class LLMAnalyzer:
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 
                 # Create images directory if it doesn't exist
-                os.makedirs('static/generated_images', exist_ok=True)
+                os.makedirs('public/images', exist_ok=True)
                 
-                filename = f"static/generated_images/news_image_{safe_title}_{timestamp}.png"
+                filename = f"public/images/news_image_{safe_title}.png"
                 
                 with open(filename, 'wb') as f:
                     f.write(img_response.content)
@@ -477,10 +477,10 @@ def generate_daily_good_news(api_key, country='global', personality='darth_vader
         'articles': []
     }
     for article, presentation in zip(articles, presentations):
-        if(generate_images):
-            image_prompt = scraper.llm_analyzer.generate_image_prompt(article)
-            article.image_prompt = image_prompt
-            article.image_url = scraper.llm_analyzer.generate_image(image_prompt, article.title)
+        # if(generate_images):
+        #     image_prompt = scraper.llm_analyzer.generate_image_prompt(article)
+        #     article.image_prompt = image_prompt
+        #     article.image_url = scraper.llm_analyzer.generate_image(image_prompt, article.title)
         results['articles'].append({
             'title': article.title,
             'content': article.content,
