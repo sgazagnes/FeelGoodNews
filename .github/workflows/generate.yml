@@ -5,6 +5,9 @@ on:
     - cron: '0 6 * * *'  # Runs every day at 6am UTC
   workflow_dispatch:     # Allows you to run it manually anytime
 
+permissions:
+  contents: write
+  
 jobs:
   build:
     runs-on: ubuntu-latest
