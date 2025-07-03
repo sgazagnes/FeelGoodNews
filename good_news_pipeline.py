@@ -303,7 +303,7 @@ class LLMAnalyzer:
         
         CHARACTER TRAITS: {char_info['traits']}
 
-        Present this good news story in your unique style. Make it informative and humorous while maintaining a journalistic tone true to your character. Create a title that fits your personality and style, but do not include your name. Write the title using sentence capitalization only, i.e, capitalize only the first letter of the title.
+        Present this good news story in your unique style. Make it informative and humorous while maintaining a journalistic tone true to your character. Keep it short, preferable one paragraph, and bold important words to improve readability. Then, create a title that fits your personality and style, but do not include your name. Write the title using sentence capitalization only, i.e, capitalize only the first letter of the title.
 
         Respond in JSON format like this:
         {{
