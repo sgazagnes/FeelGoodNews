@@ -290,7 +290,7 @@ class LLMAnalyzer:
     def generate_personality_response(self, article: NewsArticle, personality: str) -> str:
         """Generate personality-based news presentation using LLM"""
         
-        with open("data/personalities.json", "r", encoding="utf-8") as f:
+        with open("public/data/personalities.json", "r", encoding="utf-8") as f:
             personality_prompts = json5.load(f)
         
         if personality not in personality_prompts:
@@ -299,8 +299,8 @@ class LLMAnalyzer:
         char_info = personality_prompts[personality]
         
         prompt = f"""
-        You are {char_info['character']}.
-
+        You are {personality.replace('_', ' ').title()}, {char_info['description']}.
+        
         CHARACTER TRAITS: {char_info['traits']}
 
         Present this good news story in your unique style. Make it informative and humorous while maintaining a journalistic tone true to your character. Create a title that fits your personality and style, but do not include your name. Write the title using sentence capitalization only, not title case (avoid capitalizing each word). Capitalize only the first letter of each sentence.
@@ -323,7 +323,7 @@ class LLMAnalyzer:
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=[
-                        {"role": "system", "content": f"You are {char_info['character']} presenting good news. Stay in character completely."},
+                        {"role": "system", "content": f"You are {personality.replace('_', ' ').title()} presenting good news. Stay in character completely."},
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.8,

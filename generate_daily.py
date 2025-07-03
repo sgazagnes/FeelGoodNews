@@ -5,13 +5,9 @@ from datetime import datetime, timezone
 import random 
 import json 
 
-PERSONALITIES = [
-    "darth_vader",
-    "gary_lineker",
-    "drunk_philosopher",
-    "shakespeare",
-    "gordon_ramsay"
-]
+with open("public/data/personalities.json", "r", encoding="utf-8") as f:
+    personality_data = json.load(f)
+PERSONALITIES = list(personality_data.keys())
 
 def random_personality_for_today():
     return random.choice(PERSONALITIES)
@@ -36,7 +32,7 @@ results = generate_daily_good_news(
 
 # Save JSON with date and category
 today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-json_filename = f"public/{today_str}_{results['country']}.json"
+json_filename = f"public/data/{today_str}_{results['country']}.json"
 os.makedirs("public", exist_ok=True)
 with open(json_filename, "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2)
