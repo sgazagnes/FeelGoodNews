@@ -15,6 +15,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 import hashlib
+from cloudflare import Cloudflare
 
 @dataclass
 class NewsArticle:
@@ -33,12 +34,13 @@ class NewsArticle:
 class LLMAnalyzer:
     """Handle all LLM interactions for sentiment analysis, personality generation, and image prompts"""
     
-    def __init__(self, api_key: str = None, model: str = "gpt-3.5-turbo"):
-        self.client = OpenAI(api_key=api_key) if api_key else None
+    def __init__(self, openai_api_key: str = None, model: str = "gpt-3.5-turbo", use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
+        self.client = OpenAI(api_key=openai_api_key) if openai_api_key else None
         self.model = model
-        
-        # Fallback to local/alternative LLM if OpenAI not available
-        self.use_openai = api_key is not None
+        self.use_dall_e = use_dall_e
+
+        self.cf_client = Cloudflare(api_token=cf_api_token)
+        self.cf_account_id = cf_account_id
         
     def analyze_news_sentiment(self, title: str, content: str) -> Dict:
         """Analyze if news is positive and get sentiment score using LLM"""
@@ -83,7 +85,7 @@ class LLMAnalyzer:
         }}
         """
         
-        if self.use_openai and self.client:
+        if self.client:
             try:
                 response = self.client.chat.completions.create(
                     model=self.model,
@@ -101,7 +103,7 @@ class LLMAnalyzer:
                 print(f"LLM Analysis Error: {e}")
                 return self._fallback_analysis(title, content)
         else:
-            return self._fallback_analysis(title, content)
+            return prompt
     
     def _fallback_analysis(self, title: str, content: str) -> Dict:
         """Fallback analysis when LLM is not available"""
@@ -135,44 +137,96 @@ class LLMAnalyzer:
     def generate_image_prompt(self, article: NewsArticle) -> str:
         """Generate DALL-E image prompt based on article content"""
         
-        prompt = f"""
-        Based on this good news article, create a detailed image prompt for DALL-E that would generate an uplifting, positive image that represents the story.
+        if(self.use_dall_e):
+            prompt = f"""
+            Based on this good news article, create a detailed image prompt for DALL-E that would generate an uplifting, positive image that represents the story.
 
-        TITLE: {article.title}
-        CONTENT: {article.content}
-        POSITIVE ELEMENTS: {article.reasoning}
+            TITLE: {article.title}
+            CONTENT: {article.content}
+            POSITIVE ELEMENTS: {article.reasoning}
 
-        Guidelines for the image prompt:
-        - Make it warm, uplifting, and positive
-        - Make it as realistic as possible
-        - Focus on the emotion and feeling of the story
-        - Use cheerful but natural colors
-        - Keep it family-friendly and universally positive
-        - Make it photorealistic
-        - Avoid text or words in the image
+            Guidelines for the image prompt:
+            - Make it warm, uplifting, and positive
+            - Make it as realistic as possible
+            - Focus on the emotion and feeling of the story
+            - Use cheerful but natural colors
+            - Keep it family-friendly and universally positive
+            - Make it photorealistic
+            - Avoid text or words in the image
 
-        Create a detailed image prompt (1-2 sentences max) that captures the essence and positive emotion of this news story:
-        """
+            Create a detailed image prompt (1-2 sentences max) that captures the essence and positive emotion of this news story:
+            """
+        else:
+            prompt = f"""
+            Based on this good news article, create a detailed image prompt for a text to image LLM that would generate an uplifting, positive image that represents the story.
+
+            TITLE: {article.title}
+            CONTENT: {article.content}
+            POSITIVE ELEMENTS: {article.reasoning}
+
+            Guidelines for the image prompt:
+            - Make it warm, uplifting, positive, realistic as possible, and tightly connected to represent the story
+            - Use cheerful but natural colors
+            - Keep it family-friendly
+            - Avoid text or words in the image
+
+            Create a detailed image prompt (1-2 sentences max) that captures this news story:
+            """
         
-        if self.use_openai and self.client:
+        if self.client:
             try:
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=[
-                        {"role": "system", "content": "You are an expert at creating detailed, positive image prompts for DALL-E based on good news stories."},
+                        {"role": "system", "content": "You are an expert at creating detailed, positive image prompts for LLMs based on good news stories."},
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.7,
-                    max_tokens=150
+                    max_tokens=250
                 )
                 
                 return response.choices[0].message.content.strip()
             except Exception as e:
                 print(f"Image Prompt Generation Error: {e}")
                 return self._fallback_image_prompt(article)
+            
         else:
             return self._fallback_image_prompt(article)
     
+    def generate_image_cf(self, prompt: str, article_title: str) -> Optional[str]:
+        """
+        Generate an image from prompt using CloudFlare Workers AI 
+        """
+        data = self.cf_client.ai.with_raw_response.run(
+            "@cf/black-forest-labs/flux-1-schnell",
+            account_id=self.cf_account_id,
+            prompt=prompt,
+        ).json() 
+
+        try:
+            image_base64 = data["result"]["image"]
+
+            # Decode to bytes
+            image_bytes = base64.b64decode(image_base64)
+
+            # Generate safe filename
+            safe_title = re.sub(r'[^\w\s-]', '', article_title).strip()
+            safe_title = re.sub(r'[-\s]+', '-', safe_title)[:50]
+            # Create images directory if it doesn't exist
+            os.makedirs('public/images', exist_ok=True)
+        
+            filename = f"public/images/news_image_{safe_title}.png"
+            # Write to file
+            with open(filename, "wb") as f:
+                f.write(image_bytes)
+
+            print(f"✅ Image saved to: {filename}")
+            return filename
+        except Exception as e:
+            print(f"Error generating image: {e}")
+            return None
+
+
     def _fallback_image_prompt(self, article: NewsArticle) -> str:
         """Fallback image prompts when LLM is not available"""
         text = f"{article.title} {article.content}".lower()
@@ -188,7 +242,7 @@ class LLMAnalyzer:
         else:
             return "Uplifting scene with warm golden light, people celebrating or achieving something positive, photorealistic, inspiring"
     
-    def generate_image(self, prompt: str, article_title: str) -> Optional[str]:
+    def generate_image_de(self, prompt: str, article_title: str) -> Optional[str]:
         """Generate image using DALL-E and save locally"""
         if not self.use_openai or not self.client:
             print("OpenAI API not available for image generation")
@@ -270,23 +324,27 @@ class LLMAnalyzer:
         char_info = personality_prompts[personality]
         
         prompt = f"""
-        You are {char_info['character']}. 
+        You are {char_info['character']}.
 
         CHARACTER TRAITS: {char_info['traits']}
         TYPICAL PHRASES: {char_info['catchphrases']}
 
-        Present this good news story in your characteristic style. Make it entertaining and engaging while staying true to your character. Keep it to 3-4 paragraphs maximum.
+        Present this good news story in your characteristic style. Make it entertaining and engaging while staying true to your character. Find a story title that matches your character's personality and style, but does not include your name. Only capitalize the first letter of each sentence. 
+
+        Respond in JSON format like this:
+        {{
+            "title": "A short, catchy headline for this story in your style",
+            "text": "3-4 paragraphs of the news in your style"
+        }}
 
         NEWS TITLE: {article.title}
         NEWS CONTENT: {article.content}
         SOURCE: {article.source}
         PUBLISHED: {article.published.strftime('%Y-%m-%d')}
-        POSITIVITY ELEMENTS: {article.reasoning}
-
-        Format your response as the character would speak, including any characteristic verbal tics, mannerisms, or speech patterns. Make it fun and engaging!
+        POSITIVE ELEMENTS: {article.reasoning}
         """
         
-        if self.use_openai and self.client:
+        if self.client:
             try:
                 response = self.client.chat.completions.create(
                     model=self.model,
@@ -295,10 +353,18 @@ class LLMAnalyzer:
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.8,
-                    max_tokens=400
+                    max_tokens=500
                 )
                 
-                return response.choices[0].message.content
+                content = response.choices[0].message.content.strip()
+                if content.startswith("```"):
+                    content = content.split("\n", 1)[1]
+                    content = content.rsplit("```", 1)[0]
+
+                result = json.loads(content)
+                # print(result)
+                return result
+                
             except Exception as e:
                 print(f"Personality Generation Error: {e}")
                 return self._fallback_personality(article, personality)
@@ -317,8 +383,8 @@ class LLMAnalyzer:
         return templates.get(personality, templates['darth_vader'])
 
 class GoodNewsScraper:
-    def __init__(self, llm_api_key: str = None):
-        self.llm_analyzer = LLMAnalyzer(api_key=llm_api_key)
+    def __init__(self, llm_api_key: str = None, use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
+        self.llm_analyzer = LLMAnalyzer(openai_api_key=llm_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
         
         self.news_sources = {
             'global': [
@@ -378,7 +444,14 @@ class GoodNewsScraper:
         cutoff_date = datetime.now() - timedelta(days=days_back)
         return published_date >= cutoff_date
     
-    def scrape_and_analyze_news(self, country: str = 'global', max_articles: int = 10, max_days_back: int = 3, generate_images: bool = True) -> List[NewsArticle]:
+    def is_yesterday_article(self, published_date: datetime) -> bool:
+        """Check if article was published yesterday (00:00 to 23:59)"""
+        today = datetime.now().date()
+        yesterday = today - timedelta(days=1)
+        return published_date.date() == yesterday
+    
+
+    def scrape_and_analyze_news(self, country: str = 'global', max_articles: int = 10, max_days_back: int = 1, generate_images: bool = True) -> List[NewsArticle]:
         """Scrape news and analyze with LLM for good news detection"""
         if country not in self.news_sources:
             print(f"Country '{country}' not supported. Available: {list(self.news_sources.keys())}")
@@ -395,28 +468,32 @@ class GoodNewsScraper:
             recent_count = 0
             for article_data in articles:
                 try:
+                    # Parse published date first
+                    published_date = datetime.now()
+                    if article_data["published"]:
+                        try:
+                            published_date = datetime(*article_data["published"][:6])
+                        except (TypeError, ValueError):
+                            published_date = datetime.now()
+
+                    # Check if article is recent enough BEFORE analysis
+                    if not self.is_yesterday_article(published_date):
+                        print(
+                            f"⏰ Skipping old article: {article_data['title'][:50]}... "
+                            f"(Published: {published_date.strftime('%Y-%m-%d')})"
+                        )
+                        continue
+
                     # Analyze with LLM
                     print(f"🤖 Analyzing: {article_data['title'][:50]}...")
                     analysis = self.llm_analyzer.analyze_news_sentiment(
-                        article_data['title'], 
-                        article_data['summary']
+                        article_data["title"],
+                        article_data["summary"]
                     )
-                    
-                    if analysis['is_good_news']:
-                        published_date = datetime.now()
-                        if article_data['published']:
-                            try:
-                                published_date = datetime(*article_data['published'][:6])
-                            except (TypeError, ValueError):
-                                # If parsing fails, assume it's recent
-                                published_date = datetime.now()
-                        
-                        # Check if article is recent enough
-                        if not self.is_recent_article(published_date, max_days_back):
-                            print(f"⏰ Skipping old article: {article_data['title'][:50]}... (Published: {published_date.strftime('%Y-%m-%d')})")
-                            continue
-                    
+
+                    if analysis["is_good_news"]:
                         recent_count += 1
+                    if recent_count > max_articles:
                         article = NewsArticle(
                             title=article_data['title'],
                             content=article_data['summary'],
@@ -449,9 +526,8 @@ class GoodNewsScraper:
         all_articles.sort(key=lambda x: x.sentiment_score, reverse=True)
         return all_articles[:max_articles]
 
-
-    def present_news_with_personality(self, articles: List[NewsArticle], personality: str) -> List[str]:
-        """Generate personality-based presentations for all articles"""
+    def present_news_with_personality(self, articles: List[NewsArticle], personality: str) -> List[Dict]:
+        """Generate personality-based presentations with title + text"""
         presentations = []
         
         print(f"🎭 Generating {personality} presentations...")
@@ -460,13 +536,15 @@ class GoodNewsScraper:
             print(f"🎪 Creating presentation {i}/{len(articles)}...")
             presentation = self.llm_analyzer.generate_personality_response(article, personality)
             presentations.append(presentation)
-            time.sleep(0.5)  # Rate limiting
+            print(presentation)
+            time.sleep(0.5)
         
         return presentations
 
 
-def generate_daily_good_news(api_key, country='global', personality='darth_vader', max_articles=3, generate_images=True):
-    scraper = GoodNewsScraper(llm_api_key=api_key)
+
+def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, country='global', personality='darth_vader', max_articles=10, generate_images=True):
+    scraper = GoodNewsScraper(llm_api_key=openai_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
     articles = scraper.scrape_and_analyze_news(country, max_articles, generate_images=generate_images)
     presentations = scraper.present_news_with_personality(articles, personality)
 
@@ -476,11 +554,22 @@ def generate_daily_good_news(api_key, country='global', personality='darth_vader
         'timestamp': datetime.now().isoformat(),
         'articles': []
     }
-    for article, presentation in zip(articles, presentations):
-        # if(generate_images):
-        #     image_prompt = scraper.llm_analyzer.generate_image_prompt(article)
-        #     article.image_prompt = image_prompt
-        #     article.image_url = scraper.llm_analyzer.generate_image(image_prompt, article.title)
+    for article, presentation_data in zip(articles, presentations):
+        if(generate_images):
+            image_prompt = scraper.llm_analyzer.generate_image_prompt(article)
+            print(image_prompt)
+            article.image_prompt = image_prompt
+            generated_image = scraper.llm_analyzer.generate_image_cf(image_prompt, article.title)
+            if not generated_image:
+                fallback_images = [
+                    "public/images/fallback1.png",
+                    "public/images/fallback2.png",
+                    "public/images/fallback3.png"
+                ]
+                article.image_url = random.choice(fallback_images)
+            else:
+                article.image_url = generated_image
+
         results['articles'].append({
             'title': article.title,
             'content': article.content,
@@ -489,8 +578,10 @@ def generate_daily_good_news(api_key, country='global', personality='darth_vader
             'published': article.published.strftime("%Y-%m-%d"),
             'sentiment_score': article.sentiment_score,
             'reasoning': article.reasoning,
-            'personality_presentation': presentation,
+            'personality_title': presentation_data["title"],
+            'personality_presentation': presentation_data["text"],
             'image_url': article.image_url,
             'image_prompt': article.image_prompt
         })
+
     return results
