@@ -1,7 +1,7 @@
 {
   "country": "science",
-  "personality": "marilyn_monroe",
-  "timestamp": "2025-07-03T20:18:47.063735",
+  "personality": "morgan_freeman",
+  "timestamp": "2025-07-03T20:30:37.005163",
   "articles": [
     {
       "title": "Deafness reversed: Single injection brings hearing back within weeks",
@@ -10,10 +10,10 @@
       "source": "Latest Science News -- ScienceDaily",
       "published": "2025-07-03",
       "sentiment_score": 0.95,
-      "reasoning": "The article reports a groundbreaking medical breakthrough that restores hearing through gene therapy, offering hope to individuals with congenital deafness. The successful results, especially in children, and the potential to treat other forms of deafness make this a highly positive and inspiring story.",
-      "personality_title": "a miracle in the making: hearing returns with just one dose",
-      "personality_presentation": "Well, darlings, hold onto your high heels because science just pulled off a stunning performance! A **groundbreaking gene therapy** has just given the gift of **sound** back to those with congenital deafness — and all it took was **a single injection**! In this dazzling show, a tiny virus delivered a **healthy OTOF gene** into the inner ear, and guess what? **All ten participants** experienced a **remarkable boost in hearing** within just one month. Young children saw the most spectacular results, with a 7-year-old girl almost hearing the world again — isn’t that just divine? \n\nNow, remember, this is just the opening act. Scientists are already dreaming of expanding this miracle to treat other kinds of deafness, making sure the music of life is heard by everyone. I say, *what a wonderful world* it’s becoming, one sound at a time!",
-      "image_url": "public/images/inspiration_6.jpg",
+      "reasoning": "The article reports a groundbreaking medical breakthrough that restores hearing through gene therapy, offering hope to individuals with congenital deafness. It highlights scientific progress, successful treatment outcomes, and the potential for future advancements, all of which are highly positive and inspiring.",
+      "personality_title": "A symphony of hope: hearing restored with a single miracle shot",
+      "personality_presentation": "In a remarkable leap forward in medical science, a **single injection** of gene therapy has **brought the gift of sound** back to those born deaf, transforming lives in just **weeks**. Using a gentle virus delivery method, scientists introduced a healthy version of the **OTOF gene** into the inner ear, achieving **spectacular results** across all ten brave participants. The most heartening part? **Young children experienced near-total hearing recovery**, with a 7-year-old girl regaining almost full auditory function. And as this story unfolds, it’s clear that this breakthrough paves the way for future **treatments targeting other genes**, promising a world where silence becomes sound once more, offering hope, joy, and a new chapter for many worldwide.",
+      "image_url": "public/images/inspiration_1.jpg",
       "image_prompt": ""
     },
     {
@@ -23,10 +23,10 @@
       "source": "Latest Science News -- ScienceDaily",
       "published": "2025-07-03",
       "sentiment_score": 0.85,
-      "reasoning": "The article highlights a significant medical breakthrough using AI to detect deadly heart risks that are often missed by doctors. This advancement has the potential to save lives and improve health outcomes, representing a positive step forward in healthcare technology.",
-      "personality_title": "breaking news: AI reveals hidden heart danger before it's too late",
-      "personality_presentation": "Well, darlings, it looks like science has just turned up the glamour in healthcare! Johns Hopkins has unleashed a dazzling AI marvel called MAARS, which *sifts through* those often-overlooked heart MRI scans and medical records like a Hollywood starlet searching for her best dress. This clever little number can spot *hidden scar patterns* that spell trouble—trouble that even the sharpest doctors might miss. And honey, it's doing it with more flair and precision than a red carpet gown!\n\nNow, here's the best part—this AI whiz outshines current guidelines, dramatically improving the chances of catching deadly heart risks before they strike. It’s like having a crystal ball—one that can save lives and spare patients from unnecessary defibrillator surgeries, all while making the medical world a brighter place. So, step aside, old rules—this is truly a breakthrough worthy of a standing ovation, and I’d say, a little champagne to toast to a healthier tomorrow!",
-      "image_url": "public/images/inspiration_2.jpg",
+      "reasoning": "The article highlights a significant medical breakthrough where AI technology improves early detection of deadly heart risks, potentially saving lives and reducing unnecessary procedures. This advancement in healthcare is a positive development that offers hope for better patient outcomes and scientific progress.",
+      "personality_title": "Unveiling the Heart's Hidden Secrets: AI's Promise for Safer Hearts",
+      "personality_presentation": "In the grand symphony of medical progress, a remarkable new instrument has emerged—an advanced AI model called MAARS, developed at Johns Hopkins. Like a keen-eyed detective, MAARS meticulously scans overlooked heart MRI scans and thorough medical records, uncovering **hidden scar patterns** that can foretell **sudden cardiac death**—a danger that often slips past even the most seasoned doctors. This technological marvel not only **outperforms traditional guidelines** but also promises to **save lives** while sparing many from unnecessary procedures, offering a future where hope beats stronger in every heartbeat. With such innovation on the horizon, the prospects for healthier, safer lives shine brighter than ever.",
+      "image_url": "public/images/inspiration_6.jpg",
       "image_prompt": ""
     },
     {
@@ -36,10 +36,10 @@
       "source": "Latest Science News -- ScienceDaily",
       "published": "2025-07-03",
       "sentiment_score": 0.85,
-      "reasoning": "The article reports a scientific breakthrough in cancer treatment, highlighting the potential for new therapies that could save lives and improve health outcomes. This kind of medical advance offers hope and inspiration, making it uplifting news for many.",
-      "personality_title": "a sweet smelling surprise in the fight against cancer",
-      "personality_presentation": "Well, darlings, it looks like science is turning heads and noses in the best way! Researchers in Japan have discovered that **benzaldehyde**, the charming compound that gives almonds and apricots their delightful aroma, might just be the new hero in the battle against those stubborn cancer cells. This lovely molecule can **halt the shape-shifting tricks** of aggressive pancreatic cancer, which is notoriously hard to treat. I mean, who knew that a whiff of something so sweet could hold such power? \n\nAnd here's the real showstopper – benzaldehyde targets a **secret protein interaction**, making those pesky cancer cells less sneaky, all while leaving normal cells alone. It’s like giving cancer a one-way ticket to the exit door! So, with a little more research and a sprinkle of hope, this fragrant breakthrough could be the star ingredient in future therapies, especially when paired with radiation or targeted treatments. Now, that’s a reason to smile, isn’t it, sugar?",
-      "image_url": "public/images/inspiration_7.jpg",
+      "reasoning": "The article reports a promising scientific breakthrough in cancer treatment, highlighting a potential new therapy that could help combat resistant pancreatic cancer. This advancement offers hope for improved health outcomes and demonstrates progress in medical research, which is generally uplifting and inspiring.",
+      "personality_title": "Aromatic Ally: Nature’s Sweet Secret Against Resilient Cancer",
+      "personality_presentation": "Imagine, if you will, a molecule that not only tickles your senses with the sweet aroma of almonds and apricots but also holds the promise of turning the tide against one of the most formidable foes in medicine—**therapy-resistant pancreatic cancer**. Japanese scientists have uncovered that **benzaldehyde**, a compound best known for its delightful scent, can **halt the shape-shifting ability** of aggressive cancer cells—those cunning little invaders that dodge treatments and spread like wildfire. **By targeting a crucial protein interaction**, this natural compound can potentially **stop cancer in its tracks**, all while sparing the normal cells that make life worth living. The best part? When combined with existing radiation or targeted therapies, benzaldehyde might become an unstoppable **partner in the fight for hope**. It’s a shining example of how nature and science, together, can craft **hopeful new horizons** in medicine, paving the way for more effective and less invasive treatments in the near future.",
+      "image_url": "public/images/inspiration_1.jpg",
       "image_prompt": ""
     },
     {
@@ -49,10 +49,10 @@
       "source": "Latest Science News -- ScienceDaily",
       "published": "2025-07-03",
       "sentiment_score": 0.85,
-      "reasoning": "The article reports a significant scientific breakthrough in quantum computing, which has the potential to advance technology and benefit society in the future. Such innovations can lead to new solutions for complex problems, inspiring hope for progress and technological development.",
-      "personality_title": "breaking through the quantum curtain with a glamorous twist",
-      "personality_presentation": "Well, darlings, hold onto your diamonds because science just threw us a dazzling curveball! A talented team of scientists has **cracked the code** to reliable quantum computing — yes, the **impossible** is now a sparkling reality! They've created an **algorithm** that allows your everyday computer to **faithfully mimic** those tricky, fault-tolerant quantum circuits built on the notoriously elusive GKP bosonic code. Imagine that, a **test-bed** for future tech, shining brighter than a Hollywood marquee! \n\nThis breakthrough isn't just a scientific feather in their cap; it promises to **revolutionize technology**, bringing us closer to solving the world's most complex problems. So, here's to progress, my dear friends — with a little bit of Hollywood sparkle, the future looks brighter than ever!",
-      "image_url": "public/images/inspiration_2.jpg",
+      "reasoning": "The article reports a significant scientific breakthrough in quantum computing, which has the potential to advance technology and benefit society in the future. Such innovations can lead to new solutions for complex problems, inspiring hope for technological progress and scientific achievement.",
+      "personality_title": "Unlocking the Quantum Frontier: A New Dawn in Computing",
+      "personality_presentation": "In a remarkable leap forward, a talented multinational team of scientists has **cracked the long-standing barrier** that has kept fault-tolerant quantum computing just out of reach. They have devised an **ingenious algorithm** that allows **ordinary computers** to **faithfully mimic** the intricate dance of a fault-tolerant quantum circuit built upon the notoriously tricky GKP bosonic code. This breakthrough doesn’t just represent a scientific milestone; it opens a **vivid new chapter** in the story of technological progress. As we stand on the cusp of this quantum revolution, the promise of tackling **complex problems** and driving **societal advancements** shines brighter than ever. Truly, the future is a canvas painted with the bold strokes of human ingenuity and hope.",
+      "image_url": "public/images/inspiration_1.jpg",
       "image_prompt": ""
     },
     {
@@ -62,10 +62,10 @@
       "source": "Latest Science News -- ScienceDaily",
       "published": "2025-07-03",
       "sentiment_score": 0.85,
-      "reasoning": "This article highlights a scientific breakthrough in sustainable water technology, addressing a critical global issue of freshwater scarcity. The development of a solar-powered, scalable desalination method that produces clean water without electricity is a positive advancement that can benefit communities and the environment, inspiring hope for a more sustainable future.",
-      "personality_title": "a splash of hope: sun-powered sponge turns ocean water into drinks just like magic",
-      "personality_presentation": "Darling, imagine a world where all you need is a little sunshine and a chic plastic cover to turn salty sea into sippable water — well, honey, that's no longer just a dream! Scientists have whipped up a *solar-powered sponge-like aerogel* that’s *big enough* to make a splash in real life, turning ocean water into fresh, clean sipping water — no electricity required, just Mother Nature's own sunshine! This clever invention is a *scaling sensation*, meaning it works just as well in the big leagues, bringing hope for communities thirsty for a miracle. So, next time you hear about water woes, just remember, the future's looking *dazzlingly* bright and oh-so-refreshing!",
-      "image_url": "public/images/inspiration_8.png",
+      "reasoning": "The article highlights a scientific breakthrough in sustainable technology that enables low-cost, energy-free freshwater production from seawater, addressing global water scarcity issues. This innovation promotes environmental progress and has positive implications for communities worldwide, fostering hope for a more sustainable future.",
+      "personality_title": "Harnessing the Sun: A New Dawn for Fresh Water from the Ocean",
+      "personality_presentation": "In a remarkable stride toward a **sustainable future**, scientists have crafted a **solar-powered sponge-like aerogel** that transforms **seawater into drinking water** — and it does so using nothing more than sunlight and a simple plastic cover. Unlike previous models that struggled with size and efficiency, this **innovative 3D-printed material** stays effective even at larger scales, opening doors to **cost-effective, energy-free desalination**. Imagine a world where **clean water**, essential to life, flows freely from the ocean, powered by the sun and human ingenuity. With outdoor tests showing promising results, this breakthrough hints at a future where **water scarcity** becomes a thing of the past, fostering hope and progress for communities around the globe.",
+      "image_url": "public/images/inspiration_7.jpg",
       "image_prompt": ""
     }
   ]
