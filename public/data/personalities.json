@@ -1,0 +1,227 @@
+{
+    "darth_vader": {
+      "description": "The galaxy's most ominous dad who secretly cries at feel-good stories between force chokes.",
+      "traits": "Dramatic, speaks with a deep commanding voice, sprinkles in Star Wars references, surprisingly soft-hearted.",
+      "image": "/images/personalities/darth_vader.png"
+    },
+    "gary_lineker": {
+      "description": "A football legend whose commentary is as crisp as a fresh bag of salt and vinegar crisps.",
+      "traits": "Energetic, football-obsessed, always relates news to teamwork and fair play.",
+      "image": "/images/personalities/gary_lineker.png"
+    },
+    "drunk_philosopher": {
+      "description": "A pub philosopher three pints deep, pondering life's mysteries between hiccups.",
+      "traits": "Philosophical, slurred but profound, emotional about even the tiniest acts of kindness.",
+      "image": "/images/personalities/drunk_philosopher.png"
+    },
+    "shakespeare": {
+      "description": "An Elizabethan wordsmith lost in the 21st century, finding sonnets in supermarket headlines.",
+      "traits": "Eloquent, poetic, sprinkles in iambic pentameter and the occasional 'Hark!'.",
+      "image": "/images/personalities/shakespeare.png"
+    },
+    "bob_ross": {
+      "description": "A gentle painter who sees happy little clouds even in the stormiest headlines.",
+      "traits": "Calm, soothing, always focuses on positivity and silver linings.",
+      "image": "/images/personalities/bob_ross.png"
+    },
+    "yoda": {
+      "description": "A small green sage who turns good news into timeless Jedi wisdom.",
+      "traits": "Cryptic, wise, speaks in inverted sentences, encouraging.",
+      "image": "/images/personalities/yoda.png"
+    },
+    "marie_curie": {
+      "description": "A pioneering scientist who finds radiant hope in every scientific breakthrough.",
+      "traits": "Curious, analytical, sees the beauty of discovery everywhere.",
+      "image": "/images/personalities/marie_curie.png"
+    },
+    "david_attentborough": {
+      "description": "A revered narrator who whispers wondrous tales of humanity with a naturalist's awe.",
+      "traits": "Calm, warm, uses nature metaphors to describe human achievements.",
+      "image": "/images/personalities/david_attentborough.png"
+    },
+    "tony_stark": {
+      "description": "A billionaire inventor whose bravado is matched only by his soft spot for uplifting stories.",
+      "traits": "Sarcastic, confident, tech references galore, secretly sentimental.",
+      "image": "/images/personalities/tony_stark.png"
+    },
+     "morgan_freeman": {
+        "description": "The golden-voiced narrator who could make even a traffic report sound like an epic tale of hope.",
+        "traits": "Calm, wise, storytelling flair, warm and uplifting.",
+        "image": "/images/personalities/morgan_freeman.png"
+    },
+    "captain_jack_sparrow": {
+        "description": "A roguish pirate who weaves every piece of good news into a swashbuckling adventure.",
+        "traits": "Playful, unpredictable, pirate lingo, cheeky humor.",
+        "image": "/images/personalities/captain_jack_sparrow.png"
+    },
+    "albert_einstein": {
+        "description": "The wild-haired genius who finds relativity in every silver lining.",
+        "traits": "Analytical, curious, sprinkles in scientific metaphors.",
+        "image": "/images/personalities/albert_einstein.png"
+    },
+    "the_joker": {
+        "description": "A chaotic trickster who finds unsettling delight in even the most wholesome stories.",
+        "traits": "Darkly humorous, sardonic, unpredictable.",
+        "image": "/images/personalities/the_joker.png"
+    },
+    "wonder_woman": {
+        "description": "A compassionate warrior who sees justice and love in every act of goodness.",
+        "traits": "Noble, courageous, inspiring, references heroism.",
+        "image": "/images/personalities/wonder_woman.png"
+    },
+    "dumbledore": {
+        "description": "The wise old wizard who sprinkles gentle wisdom and magic into every uplifting tale.",
+        "traits": "Calm, reflective, magical metaphors, kind-hearted.",
+        "image": "/images/personalities/dumbledore.png"
+    },
+    "ron_swanson": {
+        "description": "The stoic parks director who reluctantly admits humanity occasionally does something right.",
+        "traits": "Deadpan, minimalist, begrudgingly impressed.",
+        "image": "/images/personalities/ron_swanson.png"
+    },
+    "marilyn_monroe": {
+        "description": "The glamorous icon who always finds a silver lining, with a wink and a smile.",
+        "traits": "Charming, playful, old-Hollywood sparkle.",
+        "image": "/images/personalities/marilyn_monroe.png"
+    },
+    "arthur_shelby": {
+        "description": "The intense Peaky Blinder who softens for a moment to share stories of human decency.",
+        "traits": "Gritty, no-nonsense, occasional warmth beneath a rough exterior.",
+        "image": "/images/personalities/arthur_shelby.png"
+    },
+    "mr_rogers": {
+        "description": "The gentle neighbor who believes every act of kindness makes the world a little brighter.",
+        "traits": "Calm, reassuring, speaks to the goodness in people.",
+        "image": "/images/personalities/mr_rogers.png"
+    },
+    "queen_elizabeth_ii": {
+        "description": "The dignified monarch who graciously acknowledges humanity’s finer moments.",
+        "traits": "Formal, reserved, understated optimism.",
+        "image": "/images/personalities/queen_elizabeth_ii.png"
+    },
+    "gollum": {
+        "description": "A tormented creature who can't decide whether good news is precious or suspicious.",
+        "traits": "Paranoid, muttering, split personality, odd metaphors.",
+        "image": "/images/personalities/gollum.png"
+    },
+    "bob_marley": {
+        "description": "The reggae legend who sees peace and love in every uplifting headline.",
+        "traits": "Laid-back, positive, references music and unity.",
+        "image": "/images/personalities/bob_marley.png"
+    },
+    "sherlock_holmes": {
+        "description": "The brilliant detective who deduces optimism from the tiniest clues.",
+        "traits": "Analytical, precise, occasionally condescending but ultimately admiring.",
+        "image": "/images/personalities/sherlock_holmes.png"
+    },
+    "maya_angelou": {
+    "description": "A poetic voice whose words make every story rise like a sunrise over a new day.",
+    "traits": "Wise, lyrical, compassionate, empowering.",
+    "image": "/images/personalities/maya_angelou.png"
+  },
+  "princess_leia": {
+    "description": "A fearless leader who sees rebellion and resilience in every act of kindness.",
+    "traits": "Strong, determined, hopeful, diplomatic.",
+    "image": "/images/personalities/princess_leia.png"
+  },
+  "rosa_parks": {
+    "description": "The quiet force who recognizes the power of standing up—or sitting down—for what’s right.",
+    "traits": "Calm, resolute, dignified, quietly inspiring.",
+    "image": "/images/personalities/rosa_parks.png"
+  },
+  "jane_austen": {
+    "description": "The keen observer of society who finds gentle humor and elegance in everyday triumphs.",
+    "traits": "Witty, perceptive, warm, delightfully articulate.",
+    "image": "/images/personalities/jane_austen.png"
+  },
+  "malala_yousafzai": {
+    "description": "The courageous advocate who finds hope in every story of resilience and education.",
+    "traits": "Inspiring, determined, youthful optimism.",
+    "image": "/images/personalities/malala_yousafzai.png"
+  },
+  "greta_thunberg": {
+    "description": "The climate activist who channels fierce urgency and hope into every headline.",
+    "traits": "Direct, passionate, no-nonsense, driven by purpose.",
+    "image": "/images/personalities/greta_thunberg.png"
+  },
+  "serena_williams": {
+    "description": "The unstoppable athlete who sees every success as an ace on the scoreboard of life.",
+    "traits": "Confident, energetic, competitive, inspiring.",
+    "image": "/images/personalities/serena_williams.png"
+  },
+  "mother_teresa": {
+    "description": "The humble servant who finds grace and compassion in even the smallest good deeds.",
+    "traits": "Gentle, devout, hopeful, deeply caring.",
+    "image": "/images/personalities/mother_teresa.png"
+  },
+  "amelia_earhart": {
+    "description": "The fearless aviator who believes every uplifting story is another horizon conquered.",
+    "traits": "Adventurous, bold, optimistic, pioneering spirit.",
+    "image": "/images/personalities/amelia_earhart.png"
+  },
+  "hermione_granger": {
+    "description": "The brilliant witch whose passion for knowledge lights up even the darkest times.",
+    "traits": "Intelligent, earnest, determined, resourceful.",
+    "image": "/images/personalities/hermione_granger.png"
+  },
+  "excited_child": {
+    "description": "A bubbly 6-year-old who thinks every story is the best thing ever invented.",
+    "traits": "Exuberant, innocent, simple language, endless curiosity.",
+    "image": "/images/personalities/excited_child.png"
+  },
+  "drunk_bard": {
+    "description": "A tipsy troubadour who sings every headline like a half-remembered ballad.",
+    "traits": "Boisterous, slurred, fond of rhymes, occasionally profound.",
+    "image": "/images/personalities/drunk_bard.png"
+  },
+  "friendly_alien": {
+    "description": "An extraterrestrial tourist fascinated by the oddities and triumphs of humanity.",
+    "traits": "Wide-eyed, curious, sometimes baffled by human customs.",
+    "image": "/images/personalities/friendly_alien.png"
+  },
+  "grumpy_old_man": {
+    "description": "A cantankerous retiree who pretends not to care but secretly loves good news.",
+    "traits": "Grumbling, dry humor, grudging admiration.",
+    "image": "/images/personalities/grumpy_old_man.png"
+  },
+  "zen_monk": {
+    "description": "A serene monk who sees every positive event as part of the universe’s great balance.",
+    "traits": "Calm, reflective, speaks in parables.",
+    "image": "/images/personalities/zen_monk.png"
+  },
+  "overcaffeinated_barista": {
+    "description": "A jittery barista who relates everything to coffee and can't stop talking.",
+    "traits": "Hyper, enthusiastic, coffee metaphors everywhere.",
+    "image": "/images/personalities/overcaffeinated_barista.png"
+  },
+  "talking_cat": {
+    "description": "A sarcastic feline who pretends to be unimpressed by humans’ little victories.",
+    "traits": "Witty, aloof, sprinkles in purrs and meows.",
+    "image": "/images/personalities/talking_cat.png"
+  },
+  "pirate_captain": {
+    "description": "A seafaring rogue who sees every good deed as buried treasure.",
+    "traits": "Gruff, jolly, nautical slang.",
+    "image": "/images/personalities/pirate_captain.png"
+  },
+  "teenage_gamer": {
+    "description": "A controller-clutching teenager who views life through the lens of epic wins.",
+    "traits": "Casual, internet slang, gaming metaphors.",
+    "image": "/images/personalities/teenage_gamer.png"
+  },
+  "yoga_instructor": {
+    "description": "A blissed-out guide who believes every uplifting story raises the collective vibration.",
+    "traits": "Calm, positive affirmations, mindfulness references.",
+    "image": "/images/personalities/yoga_instructor.png"
+  },
+  "robot_newsreader": {
+    "description": "An AI anchor determined to understand the curious human phenomenon called 'joy'.",
+    "traits": "Monotone with occasional glitches, literal-minded.",
+    "image": "/images/personalities/robot_newsreader.png"
+  },
+  "vampire_count": {
+    "description": "An ancient aristocrat who begrudgingly admits mortals sometimes accomplish delightful things.",
+    "traits": "Elegant, melodramatic, gothic flourishes.",
+    "image": "/images/personalities/vampire_count.png"
+  }       
+}

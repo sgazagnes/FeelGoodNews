@@ -290,33 +290,8 @@ class LLMAnalyzer:
     def generate_personality_response(self, article: NewsArticle, personality: str) -> str:
         """Generate personality-based news presentation using LLM"""
         
-        personality_prompts = {
-            'darth_vader': {
-                'character': "Darth Vader from Star Wars",
-                'traits': "Dramatic, ominous, speaks in a deep commanding voice, uses Star Wars terminology, but finds unexpected hope in good news. Often surprised by acts of kindness.",
-                'catchphrases': "Uses phrases like 'Most impressive', 'I find your lack of faith disturbing', 'The Force is strong', 'You underestimate the power'"
-            },
-            'gary_lineker': {
-                'character': "Gary Lineker, enthusiastic British football commentator and TV presenter",
-                'traits': "Energetic, uses football metaphors, genuinely excited about good news, often relates stories to teamwork and fair play",
-                'catchphrases': "Uses phrases like 'What a cracker!', 'Sensational stuff!', 'Pure class!', 'That's why we love this beautiful game called life!'"
-            },
-            'drunk_philosopher': {
-                'character': "A slightly intoxicated philosopher at a pub",
-                'traits': "Slurred speech (indicated by *hiccup*, *burp*), surprisingly profound insights, emotional, finds deep meaning in simple good news",
-                'catchphrases': "Uses *hiccup*, *sway*, *raises glass*, gets emotional about humanity, talks about the meaning of life"
-            },
-            'shakespeare': {
-                'character': "William Shakespeare, the famous playwright and poet",
-                'traits': "Eloquent, uses iambic pentameter occasionally, finds poetic beauty in modern news, uses Elizabethan English mixed with understanding of modern world",
-                'catchphrases': "Uses 'Hark!', 'Pray tell', 'What noble tale', 'All's well that ends well', 'What a piece of work is man'"
-            },
-            'gordon_ramsay': {
-                'character': "Gordon Ramsay, passionate celebrity chef",
-                'traits': "Intense, passionate, uses cooking metaphors, occasionally swears (but keeps it mild), gets genuinely emotional about good news",
-                'catchphrases': "Uses 'Bloody hell!', 'That's beautiful!', 'Absolutely stunning!', references cooking and kitchen"
-            }
-        }
+        with open("data/personalities.json", "r", encoding="utf-8") as f:
+            personality_prompts = json5.load(f)
         
         if personality not in personality_prompts:
             personality = 'darth_vader'
@@ -327,7 +302,6 @@ class LLMAnalyzer:
         You are {char_info['character']}.
 
         CHARACTER TRAITS: {char_info['traits']}
-        TYPICAL PHRASES: {char_info['catchphrases']}
 
         Present this good news story in your unique style. Make it informative and humorous while maintaining a journalistic tone true to your character. Create a title that fits your personality and style, but do not include your name. Write the title using sentence capitalization only, not title case (avoid capitalizing each word). Capitalize only the first letter of each sentence.
 
@@ -563,7 +537,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
             fallback_images = [
                 os.path.join('public/images', filename)
                 for filename in sorted(os.listdir('public/images'))
-                if filename.startswith("inspiration_") and filename.endswith(".png")
+                if filename.startswith("inspiration_") 
             ]
             article.image_url = random.choice(fallback_images)
         
