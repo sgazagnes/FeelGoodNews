@@ -1,41 +1,41 @@
 {
   "country": "global",
   "personality": "gordon_ramsay",
-  "timestamp": "2025-07-02T06:21:37.743125",
+  "timestamp": "2025-07-03T06:21:36.354570",
   "articles": [
     {
-      "title": "Banknotes are getting a makeover - and the Bank of England wants your help",
-      "content": "The first facelift in more than 50 years signals the possible end of historical figures on notes.",
-      "url": "https://www.bbc.com/news/articles/cy4nn1d2vzxo",
-      "source": "BBC News",
-      "published": "2025-07-01",
-      "sentiment_score": 0.2,
-      "reasoning": "Found 1 positive and 0 negative indicators",
-      "personality_presentation": "Bloody hell, this is beautiful! Banknotes are getting a makeover - and the Bank of England wants your help\n\nLook at this gorgeous story: The first facelift in more than 50 years signals the possible end of historical figures on notes.\n\nAbsolutely stunning! That's what I call a perfect dish of humanity!",
-      "image_url": "",
-      "image_prompt": ""
-    },
-    {
-      "title": "Study: 14 million lives could be lost due to Trump aid cuts",
-      "content": "A new study looks at lives saved by USAID in the past and what the future without the agency will look like.",
-      "url": "https://www.npr.org/sections/goats-and-soda/2025/07/01/nx-s1-5452513/trump-usaid-foreign-aid-deaths",
-      "source": "NPR Topics: News",
-      "published": "2025-07-01",
-      "sentiment_score": 0.2,
-      "reasoning": "Found 1 positive and 0 negative indicators",
-      "personality_presentation": "Bloody hell, this is beautiful! Study: 14 million lives could be lost due to Trump aid cuts\n\nLook at this gorgeous story: A new study looks at lives saved by USAID in the past and what the future without the agency will look like.\n\nAbsolutely stunning! That's what I call a perfect dish of humanity!",
-      "image_url": "",
-      "image_prompt": ""
-    },
-    {
-      "title": "WATCH:  Penguin joins swimmers at the beach in Brazil",
-      "content": "A Magellanic penguin was spotted at the beach in Rio de Janeiro over the weekend, drawing attention from beachgoers who shared images of the rare visitor on social media.",
-      "url": "https://abcnews.go.com/International/video/penguin-joins-swimmers-beach-brazil-123397760",
+      "title": "WATCH:  How American zoos are helping animals beat the scorching heat",
+      "content": "With summer in full swing and temperatures on the rise, Whit Johnson shares how zoos are helping animals across America beat the heat.",
+      "url": "https://abcnews.go.com/WNT/video/american-zoos-helping-animals-beat-scorching-heat-123427559",
       "source": "ABC News: Top Stories",
+      "published": "2025-07-03",
+      "sentiment_score": 0.4,
+      "reasoning": "Found 2 positive and 0 negative indicators",
+      "personality_presentation": "Bloody hell, this is beautiful! WATCH:  How American zoos are helping animals beat the scorching heat\n\nLook at this gorgeous story: With summer in full swing and temperatures on the rise, Whit Johnson shares how zoos are helping animals across America beat the heat.\n\nAbsolutely stunning! That's what I call a perfect dish of humanity!",
+      "image_url": "",
+      "image_prompt": ""
+    },
+    {
+      "title": "Raducanu ready for Sabalenka after 'statement' win",
+      "content": "After Emma Raducanu plays one of her best matches in \"a long time\", BBC Sport analyses how she can test world number one Aryna Sabalenka.",
+      "url": "https://www.bbc.com/sport/tennis/articles/c86g079z8l9o",
+      "source": "BBC News",
       "published": "2025-07-02",
       "sentiment_score": 0.2,
       "reasoning": "Found 1 positive and 0 negative indicators",
-      "personality_presentation": "Bloody hell, this is beautiful! WATCH:  Penguin joins swimmers at the beach in Brazil\n\nLook at this gorgeous story: A Magellanic penguin was spotted at the beach in Rio de Janeiro over the weekend, drawing attention from beachgoers who shared images of the rare visitor on social media.\n\nAbsolutely stunning! That's what I call a perfect dish of humanity!",
+      "personality_presentation": "Bloody hell, this is beautiful! Raducanu ready for Sabalenka after 'statement' win\n\nLook at this gorgeous story: After Emma Raducanu plays one of her best matches in \"a long time\", BBC Sport analyses how she can test world number one Aryna Sabalenka.\n\nAbsolutely stunning! That's what I call a perfect dish of humanity!",
+      "image_url": "",
+      "image_prompt": ""
+    },
+    {
+      "title": "Citroen owners left stranded over airbag safety risk",
+      "content": "An estimated 120,000 drivers have been told not to use their vehicles following a fatal accident in France.",
+      "url": "https://www.bbc.com/news/articles/c0m8872n9gxo",
+      "source": "BBC News",
+      "published": "2025-07-02",
+      "sentiment_score": 0.2,
+      "reasoning": "Found 1 positive and 0 negative indicators",
+      "personality_presentation": "Bloody hell, this is beautiful! Citroen owners left stranded over airbag safety risk\n\nLook at this gorgeous story: An estimated 120,000 drivers have been told not to use their vehicles following a fatal accident in France.\n\nAbsolutely stunning! That's what I call a perfect dish of humanity!",
       "image_url": "",
       "image_prompt": ""
     }
