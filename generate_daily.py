@@ -14,8 +14,6 @@ PERSONALITIES = [
 ]
 
 def random_personality_for_today():
-    today = datetime.utcnow().strftime("%Y-%m-%d")
-    random.seed(today)
     return random.choice(PERSONALITIES)
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -32,7 +30,7 @@ results = generate_daily_good_news(
     cf_account_id=cf_account_id,
     country="science",
     personality=personality,
-    max_articles=1,
+    max_articles=5,
     generate_images=False
 )
 

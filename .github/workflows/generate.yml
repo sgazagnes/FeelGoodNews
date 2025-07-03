@@ -29,6 +29,10 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python generate_daily.py
 
+      - name: Cleanup old files
+        run: python scripts/cleanup_old_files.py
+
+        
       - name: Commit and push generated content
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

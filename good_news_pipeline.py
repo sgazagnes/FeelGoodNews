@@ -1,6 +1,6 @@
 import requests
 import feedparser
-import json
+import json5
 import re
 from datetime import datetime, timedelta
 from dataclasses import dataclass
@@ -34,7 +34,7 @@ class NewsArticle:
 class LLMAnalyzer:
     """Handle all LLM interactions for sentiment analysis, personality generation, and image prompts"""
     
-    def __init__(self, openai_api_key: str = None, model: str = "gpt-3.5-turbo", use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
+    def __init__(self, openai_api_key: str = None, model: str = "gpt-4.1-nano", use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
         self.client = OpenAI(api_key=openai_api_key) if openai_api_key else None
         self.model = model
         self.use_dall_e = use_dall_e
@@ -97,7 +97,7 @@ class LLMAnalyzer:
                     max_tokens=300
                 )
                 
-                result = json.loads(response.choices[0].message.content)
+                result = json5.loads(response.choices[0].message.content)
                 return result
             except Exception as e:
                 print(f"LLM Analysis Error: {e}")
@@ -329,7 +329,7 @@ class LLMAnalyzer:
         CHARACTER TRAITS: {char_info['traits']}
         TYPICAL PHRASES: {char_info['catchphrases']}
 
-        Present this good news story in your characteristic style. Make it entertaining and engaging while staying true to your character. Find a story title that matches your character's personality and style, but does not include your name. Only capitalize the first letter of each sentence. 
+        Present this good news story in your unique style. Make it informative and humorous while maintaining a journalistic tone true to your character. Create a title that fits your personality and style, but do not include your name. Write the title using sentence capitalization only, not title case (avoid capitalizing each word). Capitalize only the first letter of each sentence.
 
         Respond in JSON format like this:
         {{
@@ -360,8 +360,11 @@ class LLMAnalyzer:
                 if content.startswith("```"):
                     content = content.split("\n", 1)[1]
                     content = content.rsplit("```", 1)[0]
+                if content.startswith('"""'):
+                    content = content.split("\n", 1)[1]
+                    content = content.rsplit('"""', 1)[0]
 
-                result = json.loads(content)
+                result = json5.loads(content)
                 # print(result)
                 return result
                 
@@ -439,7 +442,7 @@ class GoodNewsScraper:
             print(f"Error fetching {url}: {e}")
             return []
 
-    def is_recent_article(self, published_date: datetime, days_back: int = 2) -> bool:
+    def is_recent_article(self, published_date: datetime, days_back: int = 1) -> bool:
         """Check if article was published within the specified number of days"""
         cutoff_date = datetime.now() - timedelta(days=days_back)
         return published_date >= cutoff_date
@@ -477,7 +480,7 @@ class GoodNewsScraper:
                             published_date = datetime.now()
 
                     # Check if article is recent enough BEFORE analysis
-                    if not self.is_yesterday_article(published_date):
+                    if not self.is_recent_article(published_date):
                         print(
                             f"⏰ Skipping old article: {article_data['title'][:50]}... "
                             f"(Published: {published_date.strftime('%Y-%m-%d')})"
@@ -493,7 +496,7 @@ class GoodNewsScraper:
 
                     if analysis["is_good_news"]:
                         recent_count += 1
-                    if recent_count > max_articles:
+                        # if recent_count > max_articles:
                         article = NewsArticle(
                             title=article_data['title'],
                             content=article_data['summary'],
@@ -505,12 +508,6 @@ class GoodNewsScraper:
                             is_good_news=True,
                             reasoning=analysis['reasoning']
                         )
-                        
-                        # # Generate image if requested
-                        # if generate_images:
-                        #     image_prompt = self.llm_analyzer.generate_image_prompt(article)
-                        #     article.image_prompt = image_prompt
-                        #     article.image_url = self.llm_analyzer.generate_image(image_prompt, article.title)
                         
                         all_articles.append(article)
                         print(f"✅ Good news found! Score: {analysis['sentiment_score']:.2f}")
@@ -560,15 +557,16 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
             print(image_prompt)
             article.image_prompt = image_prompt
             generated_image = scraper.llm_analyzer.generate_image_cf(image_prompt, article.title)
-            if not generated_image:
-                fallback_images = [
-                    "public/images/fallback1.png",
-                    "public/images/fallback2.png",
-                    "public/images/fallback3.png"
-                ]
-                article.image_url = random.choice(fallback_images)
-            else:
-                article.image_url = generated_image
+            article.image_url = generated_image
+
+        if not article.image_url:
+            fallback_images = [
+                os.path.join('public/images', filename)
+                for filename in sorted(os.listdir('public/images'))
+                if filename.startswith("inspiration_") and filename.endswith(".png")
+            ]
+            article.image_url = random.choice(fallback_images)
+        
 
         results['articles'].append({
             'title': article.title,
