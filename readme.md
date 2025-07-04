@@ -32,7 +32,7 @@ FeelGoodNews is a Python application that automatically fetches science and tech
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/yourusername/feelgoodnews.git
+git clone https://github.com/sgazagnes/feelgoodnews.git
 cd feelgoodnews
 ```
 
@@ -128,57 +128,6 @@ Feel free to customize or add your own.
 
 ---
 
-## 📂 Directory Structure
-
-```
-public/
-  data/           # Generated JSON files per day/category
-  images/         # Generated images
-feelgoodnews.py   # Main codebase
-```
-
----
-
-## 🧩 Extending It
-
-You can adapt FeelGoodNews to:
-- Add more RSS feeds
-- Use different LLM providers
-- Customize personalities and summary styles
-- Integrate with web apps or newsletters
-
----
-
-## ❤️ Contributing
-
-If you'd like to improve FeelGoodNews, open an issue or submit a pull request!
-
----
-
 ## 📄 License
 
 MIT License. See LICENSE.
-
----
-
-## ✨ Example Output
-
-Example files created after running:
-- `public/data/2025-07-04_health.json`
-- `public/images/news_image_breakthrough_in_cancer.png`
-
-Each entry contains:
-- Title
-- Sentiment score
-- Category
-- Personality summary
-- Generated image prompt and file
-
----
-
-**Need help?** Feel free to:
-- Customize this further (badges, screenshots)
-- Create a `requirements.txt`
-- Build example scripts or Docker support
-
-Just let me know!
