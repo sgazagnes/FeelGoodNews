@@ -1,0 +1,21 @@
+{
+  "personality": "gollum",
+  "timestamp": "2025-07-04T20:41:48.869194",
+  "category": "Space",
+  "articles": [
+    {
+      "title": "A star exploded twice — First-ever image reveals its cosmic fingerprint",
+      "content": "Astronomers studying the remnant SNR 0509-67.5 have finally caught a white dwarf in the act of a rare “double-detonation” supernova, where an initial helium blast on the star’s surface triggers a second, core-shattering explosion.",
+      "url": "https://www.sciencedaily.com/releases/2025/07/250702214141.htm",
+      "source": "Latest Science News -- ScienceDaily",
+      "published": "2025-07-03",
+      "sentiment_score": 0.75,
+      "reasoning": "This article highlights a significant scientific breakthrough in astronomy, capturing the first-ever image of a rare double-detonation supernova. Such discoveries expand our understanding of the universe and inspire curiosity and wonder.",
+      "category": "Space",
+      "personality_title": "Astronomers capture a star's rare double explosion for the first time",
+      "personality_presentation": "**Context**\nScientists have long been fascinated by supernovas, the dramatic explosions of stars that light up the cosmos.\n\n**What happened**\nFor the first time, astronomers snapped a picture of a white dwarf star undergoing a rare double explosion, called a double-detonation supernova.\n\n**Impact**\nThis incredible discovery helps us better understand how stars live and die, opening new windows into the mysteries of the universe.\n\n**What's next**\nResearchers will study this event closely to learn more about these unusual star explosions and their effects on space.\n\n**One-sentence takeaway**\nA stunning cosmic event was caught on camera, revealing the amazing way some stars can explode twice in one extraordinary moment.",
+      "image_url": "public/images/news_image_A-star-exploded-twice-First-ever-image-reveals-its.png",
+      "image_prompt": "A vibrant, detailed illustration of a bright white dwarf star bursting in a warm, golden double explosion amidst a softly glowing cosmic landscape, surrounded by swirling, colorful nebulae and twinkling stars that evoke wonder and discovery in a family-friendly, uplifting scene."
+    }
+  ]
+}

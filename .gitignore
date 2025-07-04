@@ -1,3 +1,4 @@
 /app_test.py
 /templates
 /public/data/download.py
+__pycache__
