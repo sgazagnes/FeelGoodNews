@@ -187,8 +187,8 @@ class LLMAnalyzer:
             POSITIVE ELEMENTS: {article.reasoning}
 
             Guidelines for the image prompt:
-            - Make it warm, uplifting, positive, and in a detailed drawing or illustration style (not photorealistic)
-            - Use cheerful but natural colors
+            - Make it warm, uplifting, positive, and in a detailed drawing or painting style (not photorealistic)
+            - Use cheerful but **natural** and simple colors
             - Keep it family-friendly
             - Do NOT depict real human figures or recognizable people—use symbolic elements, objects, animals, landscapes, or abstract scenes instead
             - Avoid text or words in the image
@@ -241,12 +241,20 @@ class LLMAnalyzer:
 
             image_base64 = data["result"]["image"]
 
-            # Decode to bytes
+            # Decode base64 to bytes
             image_bytes = base64.b64decode(image_base64)
 
-            # Write to file
-            with open(filename, "wb") as f:
-                f.write(image_bytes)
+            # Load image into PIL
+            image = Image.open(BytesIO(image_bytes))
+
+            # Resize to 512x512
+            image_resized = image.resize((512, 512), Image.LANCZOS)
+
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+            # Save resized image
+            image_resized.save(filename, format="PNG")
 
             print(f"✅ Image saved to: {filename}")
             return filename
@@ -470,18 +478,18 @@ class GoodNewsScraper:
         
         self.news_sources = [
             # Global general news
-            # "https://feeds.bbci.co.uk/news/rss.xml",
-            # "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
-            # "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
+            "https://feeds.bbci.co.uk/news/rss.xml",
+            "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
+            "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
 
             # Science
             "https://www.sciencedaily.com/rss/top.xml",
-            # "https://www.nature.com/nature.rss",
-            # "https://feeds.feedburner.com/ConservationInternationalBlog",
-            # "https://www.nasa.gov/rss/dyn/breaking_news.rss",
-            # "http://earth911.com/feed/",
-            # "https://grist.org/feed/",
-            # "https://www.hrw.org/news.rss"
+            "https://www.nature.com/nature.rss",
+            "https://feeds.feedburner.com/ConservationInternationalBlog",
+            "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+            "http://earth911.com/feed/",
+            "https://grist.org/feed/",
+            "https://www.hrw.org/news.rss"
         ]
     def fetch_rss_feed(self, url: str) -> List[Dict]:
         """Fetch and parse RSS feed"""
