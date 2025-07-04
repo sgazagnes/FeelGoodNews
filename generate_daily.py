@@ -31,11 +31,11 @@ results = generate_daily_good_news(
 )
 
 # Save JSON with date and category
-today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-json_filename = f"public/data/{today_str}_{results['country']}.json"
-os.makedirs("public", exist_ok=True)
-with open(json_filename, "w", encoding="utf-8") as f:
-    json.dump(results, f, ensure_ascii=False, indent=2)
+# today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+# json_filename = f"public/data/{today_str}_{results['country']}.json"
+# os.makedirs("public", exist_ok=True)
+# with open(json_filename, "w", encoding="utf-8") as f:
+#     json.dump(results, f, ensure_ascii=False, indent=2)
 
 # # Copy images
 # os.makedirs("public/images", exist_ok=True)

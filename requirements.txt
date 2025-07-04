@@ -1,7 +1,6 @@
-Flask
-flask-cors
 requests
 feedparser
-Pillow
+json5
 openai
+pillow
 cloudflare

@@ -1,5 +1,6 @@
 import requests
 import feedparser
+import json
 import json5
 import re
 from datetime import datetime, timedelta
@@ -16,6 +17,7 @@ from io import BytesIO
 from PIL import Image
 import hashlib
 from cloudflare import Cloudflare
+from collections import defaultdict
 
 @dataclass
 class NewsArticle:
@@ -24,7 +26,7 @@ class NewsArticle:
     url: str
     source: str
     published: datetime
-    country: str
+    category: str
     sentiment_score: float = 0.0
     is_good_news: bool = False
     reasoning: str = ""
@@ -34,7 +36,7 @@ class NewsArticle:
 class LLMAnalyzer:
     """Handle all LLM interactions for sentiment analysis, personality generation, and image prompts"""
     
-    def __init__(self, openai_api_key: str = None, model: str = "gpt-4.1-nano", use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
+    def __init__(self, openai_api_key: str = None, model: str = "gpt-4.1-mini", use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
         self.client = OpenAI(api_key=openai_api_key) if openai_api_key else None
         self.model = model
         self.use_dall_e = use_dall_e
@@ -75,10 +77,23 @@ class LLMAnalyzer:
         - Negative political news
         - Corporate controversies
 
+        Then, select the **single most appropriate category** for this news story. You must choose **exactly one** of the following categories:
+
+        - Health
+        - Environment
+        - Technology
+        - Human Rights
+        - Space
+        - Other
+
+        Do not invent any other categories. Only respond with one of these exact names.
+
+
         Respond in JSON format:
         {{
             "is_good_news": true/false,
             "sentiment_score": 0.00-1.00,
+            "category": "Health, Environment, Technology, Human Rights, Space or Other",
             "reasoning": "Brief explanation of why this is or isn't good news",
             "key_positive_elements": ["list", "of", "positive", "aspects"],
             "emotional_impact": "uplifting/inspiring/heartwarming/hopeful/etc"
@@ -106,33 +121,40 @@ class LLMAnalyzer:
             return prompt
     
     def _fallback_analysis(self, title: str, content: str) -> Dict:
-        """Fallback analysis when LLM is not available"""
         text = f"{title} {content}".lower()
+
+        positive_indicators = [...]
+        negative_indicators = [...]
+
+        positive_count = ...
+        negative_count = ...
+
+        is_good = ...
+        score = ...
         
-        positive_indicators = [
-            'help', 'save', 'rescue', 'cure', 'breakthrough', 'success', 'achieve',
-            'donate', 'charity', 'volunteer', 'inspire', 'hope', 'recover',
-            'celebrate', 'win', 'award', 'hero', 'innovation', 'solution'
-        ]
-        
-        negative_indicators = [
-            'death', 'kill', 'murder', 'attack', 'crash', 'disaster', 'crisis',
-            'scandal', 'arrest', 'guilty', 'fire', 'flood', 'war', 'violence'
-        ]
-        
-        positive_count = sum(1 for word in positive_indicators if word in text)
-        negative_count = sum(1 for word in negative_indicators if word in text)
-        
-        is_good = positive_count > negative_count and positive_count > 0
-        score = min(positive_count * 0.2, 1.0) if is_good else 0.0
-        
+        # Naive category assignment
+        if any(word in text for word in ['health', 'medical', 'hospital']):
+            category = "Health"
+        elif any(word in text for word in ['environment', 'climate', 'nature']):
+            category = "Environment"
+        elif any(word in text for word in ['technology', 'tech', 'innovation']):
+            category = "Technology"
+        elif any(word in text for word in ['human rights', 'equality', 'justice']):
+            category = "Human Rights"
+        elif any(word in text for word in ['space', 'astronomy', 'stars']):
+            category = "Space"
+        else:
+            category = "Other"
+
         return {
             "is_good_news": is_good,
             "sentiment_score": score,
+            "category": category,
             "reasoning": f"Found {positive_count} positive and {negative_count} negative indicators",
             "key_positive_elements": ["fallback analysis"],
             "emotional_impact": "positive" if is_good else "neutral"
         }
+
     
     def generate_image_prompt(self, article: NewsArticle) -> str:
         """Generate DALL-E image prompt based on article content"""
@@ -303,7 +325,8 @@ class LLMAnalyzer:
         
         CHARACTER TRAITS: {char_info['traits']}
 
-        Present this good news story in your unique style. Make it informative, humorous, and easily understandable while maintaining a journalistic tone . Keep it preferably one to two paragraphes, and bold important words to improve readability. Ends on the positive prospects of the story. Then, create a title that fits your personality and style, but do not include your name. Write the title capitalizing only the first letter.
+        Present this good news story in your style. Write in clear, simple, and informative language. Use the tone and perspective of your character, but avoid excessive embellishment or unnecessary commentary. Keep it concise, ideally one or two short paragraphs. Highlight the most important facts in a straightforward way. End with a brief positive takeaway about why this story matters. Then, create a title that fits your personality and style, but do not include your name. Write the title capitalizing only the first letter.
+
 
         Respond in JSON format like this:
         {{
@@ -363,39 +386,19 @@ class GoodNewsScraper:
     def __init__(self, llm_api_key: str = None, use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
         self.llm_analyzer = LLMAnalyzer(openai_api_key=llm_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
         
-        self.news_sources = {
-            'global': [
-                'https://feeds.bbci.co.uk/news/rss.xml',
-                'https://rss.cnn.com/rss/edition.rss',
-                'https://feeds.reuters.com/reuters/topNews',
-                'https://feeds.npr.org/1001/rss.xml',
-                'http://feeds.abcnews.com/abcnews/topstories',
-            ],
-            'us': [
-                'https://rss.cnn.com/rss/cnn_us.rss',
-                'https://feeds.npr.org/1003/rss.xml',
-                'http://feeds.abcnews.com/abcnews/usheadlines',
-            ],
-            'uk': [
-                'https://feeds.bbci.co.uk/news/uk/rss.xml',
-                'https://www.theguardian.com/uk/rss',
-            ],
-            'canada': [
-                'https://feeds.cbc.ca/rss/canada',
-            ],
-            'australia': [
-                'https://feeds.abc.net.au/news/australia',
-            ],
-            'tech': [
-                'https://feeds.feedburner.com/TechCrunch',
-                'https://www.wired.com/feed/rss',
-            ],
-            'science': [
-                'https://www.sciencedaily.com/rss/top.xml',
-                'https://www.nature.com/nature.rss',
-            ]
-        }
+        self.news_sources = [
+            # Global general news
+            "https://feeds.bbci.co.uk/news/rss.xml",
+            "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
+            "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
+            "https://news.google.com/rss/search?q=site%3Areuters.com&hl=en-US&gl=US&ceid=US%3Aen",
 
+            # Science
+            "https://www.sciencedaily.com/rss/top.xml",
+            "https://www.nature.com/nature.rss",
+            "https://feeds.feedburner.com/ConservationInternationalBlog",
+            "https://www.nasa.gov/rss/dyn/breaking_news.rss"
+        ]
     def fetch_rss_feed(self, url: str) -> List[Dict]:
         """Fetch and parse RSS feed"""
         try:
@@ -428,16 +431,16 @@ class GoodNewsScraper:
         return published_date.date() == yesterday
     
 
-    def scrape_and_analyze_news(self, country: str = 'global', max_articles: int = 10, max_days_back: int = 1, generate_images: bool = True) -> List[NewsArticle]:
+    def scrape_and_analyze_news(self, country: str = 'global', max_days_back: int = 1, generate_images: bool = True) -> List[NewsArticle]:
         """Scrape news and analyze with LLM for good news detection"""
-        if country not in self.news_sources:
-            print(f"Country '{country}' not supported. Available: {list(self.news_sources.keys())}")
-            return []
+        # if country not in self.news_sources:
+        #     print(f"Country '{country}' not supported. Available: {list(self.news_sources.keys())}")
+        #     return []
         
         all_articles = []
-        sources = self.news_sources[country]
+        sources = self.news_sources
         
-        print(f"🔍 Scraping news for: {country}")
+        # print(f"🔍 Scraping news for: {country}")
         
         for source_url in sources:
             print(f"📡 Fetching from: {source_url}")
@@ -455,10 +458,10 @@ class GoodNewsScraper:
 
                     # Check if article is recent enough BEFORE analysis
                     if not self.is_recent_article(published_date):
-                        print(
-                            f"⏰ Skipping old article: {article_data['title'][:50]}... "
-                            f"(Published: {published_date.strftime('%Y-%m-%d')})"
-                        )
+                        # print(
+                        #     f"⏰ Skipping old article: {article_data['title'][:50]}... "
+                        #     f"(Published: {published_date.strftime('%Y-%m-%d')})"
+                        # )
                         continue
 
                     # Analyze with LLM
@@ -477,16 +480,16 @@ class GoodNewsScraper:
                             url=article_data['link'],
                             source=article_data['source'],
                             published=published_date,
-                            country=country,
+                            category=analysis['category'],
                             sentiment_score=analysis['sentiment_score'],
                             is_good_news=True,
                             reasoning=analysis['reasoning']
                         )
                         
                         all_articles.append(article)
-                        print(f"✅ Good news found! Score: {analysis['sentiment_score']:.2f}")
-                    else:
-                        print(f"❌ Not good news: {analysis['reasoning']}")
+                        print(f"✅ Good news found in {analysis['category']}! Score: {analysis['sentiment_score']:.2f}")
+                    # else:
+                    #     print(f"❌ Not good news: {analysis['reasoning']}")
                         
                 except Exception as e:
                     print(f"Error analyzing article: {e}")
@@ -495,7 +498,7 @@ class GoodNewsScraper:
         
         # Sort by sentiment score
         all_articles.sort(key=lambda x: x.sentiment_score, reverse=True)
-        return all_articles[:max_articles]
+        return all_articles
 
     def present_news_with_personality(self, articles: List[NewsArticle], personality: str) -> List[Dict]:
         """Generate personality-based presentations with title + text"""
@@ -514,21 +517,36 @@ class GoodNewsScraper:
 
 
 
-def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, country='global', personality='darth_vader', max_articles=10, generate_images=True):
+def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, personality='darth_vader', max_articles=10, generate_images=True):
     scraper = GoodNewsScraper(llm_api_key=openai_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
-    articles = scraper.scrape_and_analyze_news(country, max_articles, generate_images=generate_images)
-    presentations = scraper.present_news_with_personality(articles, personality)
+    articles = scraper.scrape_and_analyze_news(country, generate_images=generate_images)
+    # presentations = scraper.present_news_with_personality(articles, personality)
+    articles_by_category = defaultdict(list)
+    for article in articles:
+        category = getattr(article, "category", "Other") or "Other"
+        articles_by_category[category].append(article)
 
-    results = {
-        'country': country,
-        'personality': personality,
-        'timestamp': datetime.now().isoformat(),
-        'articles': []
+    selected_articles = []
+    for category, category_articles in articles_by_category.items():
+        sorted_articles = sorted(category_articles, key=lambda x: x.sentiment_score, reverse=True)
+        top_10 = sorted_articles[:max_articles]
+        selected_articles.extend(top_10)
+
+    # Now generate personality text only for the selected ones
+    presentations = scraper.present_news_with_personality(selected_articles, personality)
+
+    results_by_category = {
+    "Health": [],
+    "Environment": [],
+    "Technology": [],
+    "Human Rights": [],
+    "Space": [],
+    "Other": []
     }
     for article, presentation_data in zip(articles, presentations):
         if(generate_images):
             image_prompt = scraper.llm_analyzer.generate_image_prompt(article)
-            print(image_prompt)
+            # print(image_prompt)
             article.image_prompt = image_prompt
             generated_image = scraper.llm_analyzer.generate_image_cf(image_prompt, article.title)
             article.image_url = generated_image
@@ -541,19 +559,50 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
             ]
             article.image_url = random.choice(fallback_images)
         
-
-        results['articles'].append({
-            'title': article.title,
-            'content': article.content,
-            'url': article.url,
-            'source': article.source,
-            'published': article.published.strftime("%Y-%m-%d"),
-            'sentiment_score': article.sentiment_score,
-            'reasoning': article.reasoning,
-            'personality_title': presentation_data["title"],
-            'personality_presentation': presentation_data["text"],
-            'image_url': article.image_url,
-            'image_prompt': article.image_prompt
+        category = article.category
+        results_by_category[category].append({
+            "title": article.title,
+            "content": article.content,
+            "url": article.url,
+            "source": article.source,
+            "published": article.published.strftime("%Y-%m-%d"),
+            "sentiment_score": article.sentiment_score,
+            "reasoning": article.reasoning,
+            "category": category,
+            "personality_title": presentation_data["title"],
+            "personality_presentation": presentation_data["text"],
+            "image_url": article.image_url,
+            "image_prompt": article.image_prompt
         })
+        # results['articles'].append({
+        #     'title': article.title,
+        #     'content': article.content,
+        #     'url': article.url,
+        #     'source': article.source,
+        #     'published': article.published.strftime("%Y-%m-%d"),
+        #     'sentiment_score': article.sentiment_score,
+        #     'reasoning': article.reasoning,
+        #     'personality_title': presentation_data["title"],
+        #     'personality_presentation': presentation_data["text"],
+        #     'image_url': article.image_url,
+        #     'image_prompt': article.image_prompt
+        # })
+    for category, articles in results_by_category.items():
+        if not articles:
+            continue
+        # Limit to 10 articles per category
+        articles = articles[:max_articles]
+        
+        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}.json"
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump({
+                "personality": personality,
+                "timestamp": datetime.now().isoformat(),
+                "category": category,
+                "articles": articles
+            }, f, ensure_ascii=False, indent=2)
+        
+        print(f"✅ Saved: {filename}")
 
-    return results
+
+    return results_by_category
