@@ -187,9 +187,10 @@ class LLMAnalyzer:
             POSITIVE ELEMENTS: {article.reasoning}
 
             Guidelines for the image prompt:
-            - Make it warm, uplifting, positive, realistic as possible, and tightly connected to represent the story
+            - Make it warm, uplifting, positive, and in a detailed drawing or illustration style (not photorealistic)
             - Use cheerful but natural colors
             - Keep it family-friendly
+            - Do NOT depict real human figures or recognizable people—use symbolic elements, objects, animals, landscapes, or abstract scenes instead
             - Avoid text or words in the image
 
             Create a detailed image prompt (1-2 sentences max) that captures this news story:
@@ -327,7 +328,7 @@ class LLMAnalyzer:
 
         Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Use a warm, storytelling tone.
 
-        Write the news as a structured text with the following sections, each marked with the emoji and heading:
+        Write the news as a structured text with the following sections, each marked with the bullet and heading in bold text:
 
         • **The Scene**
         One or two sentences about the context.

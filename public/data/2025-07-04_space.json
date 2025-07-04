@@ -1,6 +1,6 @@
 {
   "personality": "gollum",
-  "timestamp": "2025-07-04T18:56:55.516824",
+  "timestamp": "2025-07-04T19:10:46.697819",
   "category": "Space",
   "articles": [
     {
@@ -10,12 +10,12 @@
       "source": "Latest Science News -- ScienceDaily",
       "published": "2025-07-03",
       "sentiment_score": 0.75,
-      "reasoning": "This news highlights a significant scientific breakthrough in astronomy, capturing a rare cosmic event that advances our understanding of supernovae. Such discoveries inspire curiosity and hope about the universe.",
+      "reasoning": "This news highlights a significant scientific breakthrough in astronomy, capturing for the first time a rare double-detonation supernova event. Such discoveries expand our understanding of the universe and inspire curiosity and wonder.",
       "category": "Space",
-      "personality_title": "Precious double blast in the starry sky, yes, our precious",
-      "personality_presentation": "🌌 The Scene\nThe big blackness, the sky full of shiny bits, hides secrets, precious secrets, yesss.\n\n✨ The Spark\nA clever watcher caught a sneaky star making a rare double explosion, a tricksy double-detonation, gollum!\n\n🧙‍♂️ The Protagonists\nThe clever-eyed astronomers, the watchers of the dark, they caught the star’s dance, they did, precious.\n\n💥 The Act\nFirst a tiny helium pop, then a mighty core smash! The star blew up not once, but twice, double trouble, yes!\n\n🌊 The Ripple effect\nThis rare sight helps us knows more about the big sky-booms, the supernovas, and makes us dream of the shiny future, precious.\n\n💡 The Take Away\nEven the darkest night hides a double sparkle, my precious, yesss.",
+      "personality_title": "Precious star, it explodes twice, yes it does, tricky little sparkle",
+      "personality_presentation": "• **The Scene**\nA lonely white dwarf star hides in the vast, dark sky, waiting, yes, waiting for its fate.\n\n• **The Spark**\nA sneaky helium blast whispers lies and sets off a bigger, louder boom deep inside the star, precious!\n\n• **The Protagonists**\nClever astronomers, the watchers of the night, they caught the star's secret dance and its deadly double trick.\n\n• **The Act**\nThe star bursts not once, but twice, a rare cosmic show, a double-detonation supernova, smashing things apart in a flash.\n\n• **The Ripple effect**\nThis shiny discovery opens new doors in the big universe, teaching us more about the stars’ sneaky lives and their mysterious endings, yes, it does.\n\n• **The Take Away**\nEven the quietest stars can have the loudest secrets, precious.",
       "image_url": "public/images/news_image_A-star-exploded-twice-First-ever-image-reveals-its.png",
-      "image_prompt": "A vibrant, awe-inspiring cosmic scene showing a brilliant white dwarf star in mid-explosion with two distinct bursts of glowing helium and core energy, surrounded by softly glowing nebula clouds in warm golden and soft blue tones, evoking wonder and discovery in a peaceful starry space backdrop."
+      "image_prompt": "A vibrant, detailed illustration of a glowing white dwarf star bursting with radiant golden and soft blue light, surrounded by swirling colorful cosmic clouds and twinkling stars, symbolizing the rare double explosion and the awe-inspiring wonder of astronomical discovery."
     }
   ]
 }
