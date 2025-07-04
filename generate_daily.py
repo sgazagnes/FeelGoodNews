@@ -26,7 +26,7 @@ results = generate_daily_good_news(
     cf_account_id=cf_account_id,
     personality=personality,
     max_articles=5,
-    generate_images=False
+    generate_images=True
 )
 
 # Save JSON with date and category

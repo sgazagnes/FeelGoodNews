@@ -329,26 +329,23 @@ class LLMAnalyzer:
 
         Write the news as a structured text with the following sections, each marked with the emoji and heading:
 
-        🌱 THE CONTEXT
-        [One or two sentences]
+        • **The Scene**
+        One or two sentences about the context.
 
-        ✨ WHAT SPARKED IT
-        [One or two sentences]
+        • **The Spark**
+        One or two sentences about what sparked it.
 
-        👥 WHO’S BEHIND IT
-        [One or two sentences]
+        • **The Protagonists**
+        One or two sentences about who is behind it.
 
-        🌟 WHAT HAPPENED
-        [One or two sentences]
+        • **The Act**
+        One or two sentences about what happened.
 
-        💡 WHY IT MATTERS
-        [One or two sentences]
+        • **The Ripple effect**
+        One or two sentences about why it matters and what is next.
 
-        🔮 WHAT’S NEXT
-        [One or two sentences]
-
-        💬 ONE-SENTENCE TAKEAWAY
-        [One short sentence summarizing why this is good news.]
+        • **The Take Away**
+        A short, memorable sentence
 
         At the end of your answer, do not add any other commentary or formatting.
 

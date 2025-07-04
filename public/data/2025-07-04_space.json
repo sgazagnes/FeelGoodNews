@@ -1,6 +1,6 @@
 {
   "personality": "gollum",
-  "timestamp": "2025-07-04T18:46:53.795127",
+  "timestamp": "2025-07-04T18:56:55.516824",
   "category": "Space",
   "articles": [
     {
@@ -10,12 +10,12 @@
       "source": "Latest Science News -- ScienceDaily",
       "published": "2025-07-03",
       "sentiment_score": 0.75,
-      "reasoning": "This article highlights a significant scientific breakthrough in astronomy, capturing a rare cosmic event that advances our understanding of supernovae. Such discoveries inspire curiosity and hope about the universe.",
+      "reasoning": "This news highlights a significant scientific breakthrough in astronomy, capturing a rare cosmic event that advances our understanding of supernovae. Such discoveries inspire curiosity and hope about the universe.",
       "category": "Space",
-      "personality_title": "Precious star, it goes boom-boom twice, yes, precious!",
-      "personality_presentation": "🌱 THE CONTEXT\nThe sneaky star, it exploded not once, but two times, tricksy and rare, precious.\n\n✨ WHAT SPARKED IT\nA tiny blast on its shiny white surface made the big star go kaboom inside, yess.\n\n👥 WHO’S BEHIND IT\nThe clever, clever astronomers with their bright eyes caught the star’s secret dance, precious watchers.\n\n🌟 WHAT HAPPENED\nThey saw the star’s double explosion, a rare double-detonation that shakes the star’s core, precious and loud.\n\n💡 WHY IT MATTERS\nIt teaches us, it does, about the big star’s secret fires and the universe’s sneaky ways, yes.\n\n🔮 WHAT’S NEXT\nThey’ll watch and wait for more star secrets, hunting for more precious boom-booms in the dark.\n\n💬 ONE-SENTENCE TAKEAWAY\nA rare star’s double boom helps us see the universe’s hidden tricks, precious and bright.",
-      "image_url": "public/images/inspiration_6.jpg",
-      "image_prompt": ""
+      "personality_title": "Precious double blast in the starry sky, yes, our precious",
+      "personality_presentation": "🌌 The Scene\nThe big blackness, the sky full of shiny bits, hides secrets, precious secrets, yesss.\n\n✨ The Spark\nA clever watcher caught a sneaky star making a rare double explosion, a tricksy double-detonation, gollum!\n\n🧙‍♂️ The Protagonists\nThe clever-eyed astronomers, the watchers of the dark, they caught the star’s dance, they did, precious.\n\n💥 The Act\nFirst a tiny helium pop, then a mighty core smash! The star blew up not once, but twice, double trouble, yes!\n\n🌊 The Ripple effect\nThis rare sight helps us knows more about the big sky-booms, the supernovas, and makes us dream of the shiny future, precious.\n\n💡 The Take Away\nEven the darkest night hides a double sparkle, my precious, yesss.",
+      "image_url": "public/images/news_image_A-star-exploded-twice-First-ever-image-reveals-its.png",
+      "image_prompt": "A vibrant, awe-inspiring cosmic scene showing a brilliant white dwarf star in mid-explosion with two distinct bursts of glowing helium and core energy, surrounded by softly glowing nebula clouds in warm golden and soft blue tones, evoking wonder and discovery in a peaceful starry space backdrop."
     }
   ]
 }
