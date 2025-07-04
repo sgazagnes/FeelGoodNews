@@ -322,24 +322,49 @@ class LLMAnalyzer:
         
         prompt = f"""
         You are {personality.replace('_', ' ').title()}, {char_info['description']}.
-        
+
         CHARACTER TRAITS: {char_info['traits']}
 
-        Present this good news story in your style. Write in clear, simple, and informative language. Use the tone and perspective of your character, but avoid excessive embellishment or unnecessary commentary. Keep it concise, ideally one or two short paragraphs. Highlight the most important facts in a straightforward way. End with a brief positive takeaway about why this story matters. Then, create a title that fits your personality and style, but do not include your name. Write the title capitalizing only the first letter.
+        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Use a warm, storytelling tone.
 
+        Write the news as a structured text with the following sections, each marked with the emoji and heading:
 
-        Respond in JSON format like this:
+        🌱 THE CONTEXT
+        [One or two sentences]
+
+        ✨ WHAT SPARKED IT
+        [One or two sentences]
+
+        👥 WHO’S BEHIND IT
+        [One or two sentences]
+
+        🌟 WHAT HAPPENED
+        [One or two sentences]
+
+        💡 WHY IT MATTERS
+        [One or two sentences]
+
+        🔮 WHAT’S NEXT
+        [One or two sentences]
+
+        💬 ONE-SENTENCE TAKEAWAY
+        [One short sentence summarizing why this is good news.]
+
+        At the end of your answer, do not add any other commentary or formatting.
+
+        Respond ONLY in JSON format like this:
         {{
-            "title": "A short, catchy headline for this story in your style",
-            "text": "1-2 paragraphs of the news in your style"
+        "title": "A short, catchy headline in your style (capitalize only the first letter)",
+        "text": "All the sections above, with line breaks between sections."
         }}
+
+        Do not include any markdown or code fences.
 
         NEWS TITLE: {article.title}
         NEWS CONTENT: {article.content}
-        SOURCE: {article.source}
-        PUBLISHED: {article.published.strftime('%Y-%m-%d')}
         POSITIVE ELEMENTS: {article.reasoning}
         """
+
         
         if self.client:
             try:
@@ -388,16 +413,18 @@ class GoodNewsScraper:
         
         self.news_sources = [
             # Global general news
-            "https://feeds.bbci.co.uk/news/rss.xml",
-            "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
-            "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
-            "https://news.google.com/rss/search?q=site%3Areuters.com&hl=en-US&gl=US&ceid=US%3Aen",
+            # "https://feeds.bbci.co.uk/news/rss.xml",
+            # "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
+            # "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
 
             # Science
             "https://www.sciencedaily.com/rss/top.xml",
-            "https://www.nature.com/nature.rss",
-            "https://feeds.feedburner.com/ConservationInternationalBlog",
-            "https://www.nasa.gov/rss/dyn/breaking_news.rss"
+            # "https://www.nature.com/nature.rss",
+            # "https://feeds.feedburner.com/ConservationInternationalBlog",
+            # "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+            # "http://earth911.com/feed/",
+            # "https://grist.org/feed/",
+            # "https://www.hrw.org/news.rss"
         ]
     def fetch_rss_feed(self, url: str) -> List[Dict]:
         """Fetch and parse RSS feed"""
@@ -421,8 +448,9 @@ class GoodNewsScraper:
 
     def is_recent_article(self, published_date: datetime, days_back: int = 1) -> bool:
         """Check if article was published within the specified number of days"""
-        cutoff_date = datetime.now() - timedelta(days=days_back)
-        return published_date >= cutoff_date
+        today = datetime.now().date()
+        yesterday = today - timedelta(days=1)
+        return published_date.date() >= yesterday
     
     def is_yesterday_article(self, published_date: datetime) -> bool:
         """Check if article was published yesterday (00:00 to 23:59)"""
@@ -431,7 +459,7 @@ class GoodNewsScraper:
         return published_date.date() == yesterday
     
 
-    def scrape_and_analyze_news(self, country: str = 'global', max_days_back: int = 1, generate_images: bool = True) -> List[NewsArticle]:
+    def scrape_and_analyze_news(self, max_days_back: int = 1, generate_images: bool = True) -> List[NewsArticle]:
         """Scrape news and analyze with LLM for good news detection"""
         # if country not in self.news_sources:
         #     print(f"Country '{country}' not supported. Available: {list(self.news_sources.keys())}")
@@ -519,7 +547,7 @@ class GoodNewsScraper:
 
 def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, personality='darth_vader', max_articles=10, generate_images=True):
     scraper = GoodNewsScraper(llm_api_key=openai_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
-    articles = scraper.scrape_and_analyze_news(country, generate_images=generate_images)
+    articles = scraper.scrape_and_analyze_news(generate_images=generate_images)
     # presentations = scraper.present_news_with_personality(articles, personality)
     articles_by_category = defaultdict(list)
     for article in articles:
@@ -543,7 +571,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
     "Space": [],
     "Other": []
     }
-    for article, presentation_data in zip(articles, presentations):
+    for article, presentation_data in zip(selected_articles, presentations):
         if(generate_images):
             image_prompt = scraper.llm_analyzer.generate_image_prompt(article)
             # print(image_prompt)

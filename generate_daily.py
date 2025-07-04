@@ -16,7 +16,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 cf_api_token = os.getenv("CLOUDFLARE_API_TOKEN")
 cf_account_id = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 
-personality = random_personality_for_today()
+personality = "gollum"#random_personality_for_today()
 print(f"✨ Today's personality: {personality}")
 
 results = generate_daily_good_news(
@@ -24,7 +24,6 @@ results = generate_daily_good_news(
     use_dall_e=False,
     cf_api_token=cf_api_token,
     cf_account_id=cf_account_id,
-    country="science",
     personality=personality,
     max_articles=5,
     generate_images=False
