@@ -1,6 +1,6 @@
 {
   "personality": "gollum",
-  "timestamp": "2025-07-04T19:10:46.697819",
+  "timestamp": "2025-07-04T20:22:38.580066",
   "category": "Space",
   "articles": [
     {
@@ -10,12 +10,12 @@
       "source": "Latest Science News -- ScienceDaily",
       "published": "2025-07-03",
       "sentiment_score": 0.75,
-      "reasoning": "This news highlights a significant scientific breakthrough in astronomy, capturing for the first time a rare double-detonation supernova event. Such discoveries expand our understanding of the universe and inspire curiosity and wonder.",
+      "reasoning": "This news highlights a significant scientific breakthrough in astronomy, capturing the first-ever image of a rare double-detonation supernova event. Such discoveries expand human knowledge about the universe and inspire curiosity and wonder.",
       "category": "Space",
-      "personality_title": "Precious star, it explodes twice, yes it does, tricky little sparkle",
-      "personality_presentation": "• **The Scene**\nA lonely white dwarf star hides in the vast, dark sky, waiting, yes, waiting for its fate.\n\n• **The Spark**\nA sneaky helium blast whispers lies and sets off a bigger, louder boom deep inside the star, precious!\n\n• **The Protagonists**\nClever astronomers, the watchers of the night, they caught the star's secret dance and its deadly double trick.\n\n• **The Act**\nThe star bursts not once, but twice, a rare cosmic show, a double-detonation supernova, smashing things apart in a flash.\n\n• **The Ripple effect**\nThis shiny discovery opens new doors in the big universe, teaching us more about the stars’ sneaky lives and their mysterious endings, yes, it does.\n\n• **The Take Away**\nEven the quietest stars can have the loudest secrets, precious.",
+      "personality_title": "Astronomers capture star’s rare double explosion for the first time",
+      "personality_presentation": "**Context**\nA white dwarf star, a small but dense remnant of a sun-like star, sometimes explodes in a supernova, brightening the sky. Scientists have long suspected a rare kind of double explosion might happen but had never seen it before.\n\n**What happened**\nAstronomers studying a distant star remnant finally took the first-ever picture showing a white dwarf undergoing a “double-detonation” supernova. This means a small blast on the star’s surface triggered a much bigger explosion inside.\n\n**Impact**\nThis discovery is a huge step forward in understanding how stars live and die. It helps scientists learn more about the universe’s life cycle and sparks excitement about what else we might uncover.\n\n**What’s next**\nResearchers will use this new knowledge to study other stars and improve models of how supernovae happen. This could lead to even more amazing discoveries about space.\n\n**One-sentence takeaway**\nFor the first time ever, we’ve captured a star’s rare double explosion, opening a new chapter in our cosmic story.",
       "image_url": "public/images/news_image_A-star-exploded-twice-First-ever-image-reveals-its.png",
-      "image_prompt": "A vibrant, detailed illustration of a glowing white dwarf star bursting with radiant golden and soft blue light, surrounded by swirling colorful cosmic clouds and twinkling stars, symbolizing the rare double explosion and the awe-inspiring wonder of astronomical discovery."
+      "image_prompt": "A vibrant, detailed illustration of a radiant white dwarf star bursting with layered, colorful explosions—soft golden and warm orange hues glowing against a deep navy cosmic background—surrounded by swirling stardust and gentle comet-like trails that symbolize discovery and cosmic wonder in a family-friendly, uplifting style."
     }
   ]
 }

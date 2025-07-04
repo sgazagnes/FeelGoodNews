@@ -218,36 +218,43 @@ class LLMAnalyzer:
     
     def generate_image_cf(self, prompt: str, article_title: str) -> Optional[str]:
         """
-        Generate an image from prompt using CloudFlare Workers AI 
+        Generate an image from prompt using Cloudflare Workers AI, or skip if file exists.
         """
-        data = self.cf_client.ai.with_raw_response.run(
-            "@cf/black-forest-labs/flux-1-schnell",
-            account_id=self.cf_account_id,
-            prompt=prompt,
-        ).json() 
+        # Generate safe filename
+        safe_title = re.sub(r'[^\w\s-]', '', article_title).strip()
+        safe_title = re.sub(r'[-\s]+', '-', safe_title)[:50]
+        os.makedirs('public/images', exist_ok=True)
+        filename = f"public/images/news_image_{safe_title}.png"
 
+        # Check if the file already exists
+        if os.path.exists(filename):
+            print(f"✅ Image already exists: {filename}")
+            return filename
+
+        # If not, generate the image
         try:
+            data = self.cf_client.ai.with_raw_response.run(
+                "@cf/black-forest-labs/flux-1-schnell",
+                account_id=self.cf_account_id,
+                prompt=prompt,
+            ).json()
+
             image_base64 = data["result"]["image"]
 
             # Decode to bytes
             image_bytes = base64.b64decode(image_base64)
 
-            # Generate safe filename
-            safe_title = re.sub(r'[^\w\s-]', '', article_title).strip()
-            safe_title = re.sub(r'[-\s]+', '-', safe_title)[:50]
-            # Create images directory if it doesn't exist
-            os.makedirs('public/images', exist_ok=True)
-        
-            filename = f"public/images/news_image_{safe_title}.png"
             # Write to file
             with open(filename, "wb") as f:
                 f.write(image_bytes)
 
             print(f"✅ Image saved to: {filename}")
             return filename
+
         except Exception as e:
             print(f"Error generating image: {e}")
             return None
+
 
 
     def _fallback_image_prompt(self, article: NewsArticle) -> str:
@@ -310,6 +317,68 @@ class LLMAnalyzer:
             print(f"Error generating image: {e}")
             return None
     
+    def generate_summary_response(self, article: NewsArticle, personality: str) -> str:
+        """Generate news presentation using LLM"""
+        
+        
+        prompt = f"""
+        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Write in a warm, storytelling tone.
+
+        Write the news as a structured text using the following sections. **Each section must start with the section title in bold (using double asterisks) and normal capitalization.** Then write one or two short sentences. Leave an empty line between sections.
+
+        Here are the sections:
+
+        **Context**
+        **What happened**
+        **Impact**
+        **What's next**
+        **One-sentence takeaway**
+
+        At the end, do not add any other commentary or formatting.
+
+        Respond ONLY in JSON format like this:
+        {{
+        "title": "A short, catchy headline in your style (capitalize only the first letter)",
+        "text": "All the sections above, separated by line breaks."
+        }}
+
+        Do not include any markdown or code fences.
+
+        NEWS TITLE: {article.title}
+        NEWS CONTENT: {article.content}
+        POSITIVE ELEMENTS: {article.reasoning}
+        """
+
+        
+        if self.client:
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": f" You are a journalist specializing in positive news stories. You excel at simplifying complex topics and making them engaging and easy to understand. Your audience consists of busy people who only have a few minutes each day to stay informed. Your goal is to convey the most important details clearly, in a warm, and easy-to-read style."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.8,
+                    max_tokens=500
+                )
+                
+                content = response.choices[0].message.content.strip()
+                if content.startswith("```"):
+                    content = content.split("\n", 1)[1]
+                    content = content.rsplit("```", 1)[0]
+                if content.startswith('"""'):
+                    content = content.split("\n", 1)[1]
+                    content = content.rsplit('"""', 1)[0]
+
+                result = json5.loads(content)
+                # print(result)
+                return result
+                
+            except Exception as e:
+                print(f"Generation Error: {e}")
+                return None
+        else:
+            return None
     def generate_personality_response(self, article: NewsArticle, personality: str) -> str:
         """Generate personality-based news presentation using LLM"""
         
@@ -326,34 +395,24 @@ class LLMAnalyzer:
 
         CHARACTER TRAITS: {char_info['traits']}
 
-        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Use a warm, storytelling tone.
+        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Write in a warm, storytelling tone.
 
-        Write the news as a structured text with the following sections, each marked with the bullet and heading in bold text:
+        Write the news as a structured text using the following sections. **Each section must start with the section title in bold (using double asterisks) and normal capitalization.** Then write one or two short sentences. Leave an empty line between sections.
 
-        • **The Scene**
-        One or two sentences about the context.
+        Here are the sections:
 
-        • **The Spark**
-        One or two sentences about what sparked it.
+        **Context**
+        **What happened**
+        **Impact**
+        **What's next**
+        **One-sentence takeaway**
 
-        • **The Protagonists**
-        One or two sentences about who is behind it.
-
-        • **The Act**
-        One or two sentences about what happened.
-
-        • **The Ripple effect**
-        One or two sentences about why it matters and what is next.
-
-        • **The Take Away**
-        A short, memorable sentence
-
-        At the end of your answer, do not add any other commentary or formatting.
+        At the end, do not add any other commentary or formatting.
 
         Respond ONLY in JSON format like this:
         {{
         "title": "A short, catchy headline in your style (capitalize only the first letter)",
-        "text": "All the sections above, with line breaks between sections."
+        "text": "All the sections above, separated by line breaks."
         }}
 
         Do not include any markdown or code fences.
@@ -541,6 +600,20 @@ class GoodNewsScraper:
         
         return presentations
 
+    def present_news_without_personality(self, articles: List[NewsArticle], personality: str) -> List[Dict]:
+        """Generate personality-based presentations with title + text"""
+        presentations = []
+        
+        print(f"🎭 Generating {personality} presentations...")
+        
+        for i, article in enumerate(articles, 1):
+            print(f"🎪 Creating presentation {i}/{len(articles)}...")
+            presentation = self.llm_analyzer.generate_summary_response(article, personality)
+            presentations.append(presentation)
+            print(presentation)
+            time.sleep(0.5)
+        
+        return presentations
 
 
 def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, personality='darth_vader', max_articles=10, generate_images=True):
@@ -559,7 +632,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
         selected_articles.extend(top_10)
 
     # Now generate personality text only for the selected ones
-    presentations = scraper.present_news_with_personality(selected_articles, personality)
+    presentations = scraper.present_news_without_personality(selected_articles, personality)
 
     results_by_category = {
     "Health": [],
