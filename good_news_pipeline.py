@@ -482,7 +482,7 @@ class GoodNewsScraper:
         
         self.news_sources = [
             # Global general news
-            # "https://feeds.bbci.co.uk/news/rss.xml",
+            "https://feeds.bbci.co.uk/news/rss.xml",
             "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
             "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
             "https://www.sciencedaily.com/rss/top.xml",
@@ -642,7 +642,7 @@ class GoodNewsScraper:
 def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, personality='darth_vader', max_articles=10, generate_images=True):
     scraper = GoodNewsScraper(llm_api_key=openai_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
     articles = scraper.scrape_and_analyze_news(generate_images=generate_images)
-    return
+    # return
     # presentations = scraper.present_news_with_personality(articles, personality)
     articles_by_category = defaultdict(list)
     for article in articles:
