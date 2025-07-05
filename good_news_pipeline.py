@@ -190,8 +190,9 @@ class LLMAnalyzer:
             - Make it warm, uplifting, positive, and in a detailed drawing or painting style (not photorealistic)
             - Use cheerful but **natural** and simple colors
             - Keep it family-friendly
-            - Do NOT depict real human figures or recognizable people—use symbolic elements, objects, animals, landscapes, or abstract scenes instead
+            - Do NOT depict real human figures - use symbolic elements, silhouettes, objects, animals, landscapes, or abstract scenes instead
             - Avoid text or words in the image
+            - make sure the image is connected to the story
 
             Create a detailed image prompt (1-2 sentences max) that captures this news story:
             """
