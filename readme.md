@@ -124,8 +124,6 @@ FeelGoodNews supports multiple "presentation styles" defined in:
 - `gordon_ramsay`
 - `drunk_philosopher`
 
-Feel free to customize or add your own.
-
 ---
 
 ## 📄 License
