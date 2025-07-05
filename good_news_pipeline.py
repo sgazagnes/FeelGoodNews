@@ -18,6 +18,7 @@ from PIL import Image
 import hashlib
 from cloudflare import Cloudflare
 from collections import defaultdict
+import deepl
 
 @dataclass
 class NewsArticle:
@@ -183,21 +184,26 @@ class LLMAnalyzer:
             """
         else:
             prompt = f"""
-            Based on this good news article, create a detailed image prompt for a text to image LLM that would generate an uplifting, positive image that represents the story.
+            Based on the following good news article, create a detailed image prompt for a text-to-image LLM that will generate an image that clearly represents this story.
 
             TITLE: {article.title}
             CONTENT: {article.content}
-            POSITIVE ELEMENTS: {article.reasoning}
 
-            Guidelines for the image prompt:
-            - Make it warm, uplifting, positive, and in a detailed drawing or painting style (not photorealistic)
-            - Use cheerful but **natural** and simple colors
-            - Keep it family-friendly
-            - Do NOT depict real human figures - use symbolic elements, silhouettes, objects, animals, landscapes, or abstract scenes instead
-            - Avoid text or words in the image
-            - make sure the image is connected to the story
+            **First**, extract 1–3 key subjects, objects, or themes from the article that are central to what happened (e.g., the people, animals, locations, or objects involved).
 
-            Create a detailed image prompt (1-2 sentences max) that captures this news story:
+            **Second**, describe how these elements could be shown symbolically or through metaphors that are directly relevant to the article.
+
+            **Third**, write a **single image prompt (1–2 sentences max)** that:
+            - Is warm and positive
+            - Makes sure the final image is a detailed drawing or painting (not photorealistic)
+            - Includes only natural and simple colors
+            - Is family-friendly
+            - Does NOT depict real human figures (use symbolic elements, silhouettes, objects, animals, landscapes, or abstract scenes)
+            - Avoids any text or words
+            - **Clearly depicts the extracted subjects or themes without generic symbols (like trees, butterflies, or sunshine) unless they are explicitly part of the story**
+
+
+            **Provide only the final Image Prompt after doing this reasoning internally.**
             """
         
         if self.client:
@@ -205,7 +211,7 @@ class LLMAnalyzer:
                 response = self.client.chat.completions.create(
                     model=self.model,
                     messages=[
-                        {"role": "system", "content": "You are an expert at creating detailed, positive image prompts for LLMs based on good news stories."},
+                        {"role": "system", "content": "You are an expert at creating detailed, positive image prompts for LLMs."},
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.7,
@@ -483,18 +489,18 @@ class GoodNewsScraper:
         self.news_sources = [
             # Global general news
             "https://feeds.bbci.co.uk/news/rss.xml",
-            "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
-            "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
-            "https://www.sciencedaily.com/rss/top.xml",
-            "https://www.nature.com/nature.rss",
-            "https://feeds.feedburner.com/ConservationInternationalBlog",
-            "https://www.nasa.gov/rss/dyn/breaking_news.rss",
-            "http://earth911.com/feed/",
-            "https://grist.org/feed/",
-            "https://www.hrw.org/rss/news",
-            "https://hrp.law.harvard.edu/feed",
-            "https://www.hhrjournal.org/category/blog/feed/",
-            "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
+            # "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
+            # "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
+            # "https://www.sciencedaily.com/rss/top.xml",
+            # "https://www.nature.com/nature.rss",
+            # "https://feeds.feedburner.com/ConservationInternationalBlog",
+            # "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+            # "http://earth911.com/feed/",
+            # "https://grist.org/feed/",
+            # "https://www.hrw.org/rss/news",
+            # "https://hrp.law.harvard.edu/feed",
+            # "https://www.hhrjournal.org/category/blog/feed/",
+            # "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
         ]
     def fetch_rss_feed(self, url: str) -> List[Dict]:
         """Fetch and parse RSS feed"""
@@ -638,12 +644,40 @@ class GoodNewsScraper:
         
         return presentations
 
+def protect_bold_sections(text):
+    """
+    Replace **section** with <b>section</b>
+    """
+    return re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", text)
 
-def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, personality='darth_vader', max_articles=10, generate_images=True):
+def restore_bold_sections(text):
+    """
+    Replace <b>section</b> with **section**
+    """
+    return re.sub(r"<b>(.*?)</b>", r"**\1**", text)
+# -------------------------------
+def translate_text_deepl(text, deepl_key, target_lang="FR"):
+    auth_key = deepl_key
+    if not auth_key:
+        raise ValueError("DEEPL_API_KEY environment variable not set")
+    
+    translator = deepl.Translator(auth_key)
+    protect = protect_bold_sections(text)
+    result = translator.translate_text(protect, target_lang=target_lang)
+    translated = restore_bold_sections(result.text)
+    return translated
+
+def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, deepl_api_key, personality='darth_vader', max_articles=10, generate_images=True):
     scraper = GoodNewsScraper(llm_api_key=openai_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
     articles = scraper.scrape_and_analyze_news(generate_images=generate_images)
-    # return
-    # presentations = scraper.present_news_with_personality(articles, personality)
+    unique_articles = {}
+    for article in articles:
+        if article.url not in unique_articles:
+            unique_articles[article.url] = article
+
+    # Convert back to list
+    articles = list(unique_articles.values())
+
     articles_by_category = defaultdict(list)
     for article in articles:
         category = getattr(article, "category", "Other") or "Other"
@@ -681,7 +715,13 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
                 if filename.startswith("inspiration_") 
             ]
             article.image_url = random.choice(fallback_images)
-        
+
+        french_title = translate_text_deepl(presentation_data["title"], deepl_api_key,target_lang="FR")
+        french_text = translate_text_deepl(presentation_data["text"],deepl_api_key, target_lang="FR")
+
+        # Translate to Spanish
+        spanish_title = translate_text_deepl(presentation_data["title"], deepl_api_key, target_lang="ES")
+        spanish_text = translate_text_deepl(presentation_data["text"], deepl_api_key, target_lang="ES")
         category = article.category
         results_by_category[category].append({
             "title": article.title,
@@ -694,29 +734,21 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
             "category": category,
             "personality_title": presentation_data["title"],
             "personality_presentation": presentation_data["text"],
+            "personality_title_fr": french_title,
+            "personality_presentation_fr": french_text,
+            "personality_title_es": spanish_title,
+            "personality_presentation_es": spanish_text,
             "image_url": article.image_url,
             "image_prompt": article.image_prompt
         })
-        # results['articles'].append({
-        #     'title': article.title,
-        #     'content': article.content,
-        #     'url': article.url,
-        #     'source': article.source,
-        #     'published': article.published.strftime("%Y-%m-%d"),
-        #     'sentiment_score': article.sentiment_score,
-        #     'reasoning': article.reasoning,
-        #     'personality_title': presentation_data["title"],
-        #     'personality_presentation': presentation_data["text"],
-        #     'image_url': article.image_url,
-        #     'image_prompt': article.image_prompt
-        # })
+
     for category, articles in results_by_category.items():
         if not articles:
             continue
         # Limit to 10 articles per category
         articles = articles[:max_articles]
         
-        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}.json"
+        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}_test.json"
         with open(filename, "w", encoding="utf-8") as f:
             json.dump({
                 "personality": personality,

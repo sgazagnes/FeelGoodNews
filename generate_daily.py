@@ -15,12 +15,11 @@ def random_personality_for_today():
 openai_api_key = os.getenv("OPENAI_API_KEY")
 cf_api_token = os.getenv("CLOUDFLARE_API_TOKEN")
 cf_account_id = os.getenv("CLOUDFLARE_ACCOUNT_ID")
-print("OPENAI_API_KEY present?", bool(os.getenv("OPENAI_API_KEY")))
-print("OPENAI_API_KEY length:", len(openai_api_key))
-print("CLOUDFLARE_API_TOKEN present?", bool(os.getenv("CLOUDFLARE_API_TOKEN")))
-print("CLOUDFLARE_API_TOKEN length:", len(cf_api_token))
-print("CLOUDFLARE_ACCOUNT_ID present?", bool(os.getenv("CLOUDFLARE_ACCOUNT_ID")))
-print("CLOUDFLARE_ACCOUNT_ID length:", len(cf_account_id))
+deepl_api_key = os.getenv("DEEPL_API_KEY")
+print("OPENAI_API_KEY present?", bool(os.getenv("OPENAI_API_KEY")), len(openai_api_key))
+print("CLOUDFLARE_API_TOKEN present?", bool(os.getenv("CLOUDFLARE_API_TOKEN")), len(cf_api_token))
+print("CLOUDFLARE_ACCOUNT_ID present?", bool(os.getenv("CLOUDFLARE_ACCOUNT_ID")), len(cf_account_id))
+print("DEEPL_API_KEY present?", bool(os.getenv("DEEPL_API_KEY")), len(deepl_api_key))
 # personality = "gollum"#random_personality_for_today()
 # print(f"✨ Today's personality: {personality}")
 
@@ -29,8 +28,9 @@ results = generate_daily_good_news(
     use_dall_e=False,
     cf_api_token=cf_api_token,
     cf_account_id=cf_account_id,
+    deepl_api_key=deepl_api_key,
     personality=None,
-    max_articles=5,
+    max_articles=1,
     generate_images=True
 )
 
