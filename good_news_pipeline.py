@@ -43,8 +43,8 @@ class LLMAnalyzer:
         self.model = model
         self.use_dall_e = use_dall_e
 
-        self.cf_client = Cloudflare(api_token=cf_api_token)
-        self.cf_account_id = cf_account_id
+        self.cf_client = Cloudflare(api_token=cf_api_token) if cf_api_token else None
+        self.cf_account_id = cf_account_id if cf_account_id else None
         
     def analyze_news_sentiment(self, title: str, content: str) -> Dict:
         """Analyze if news is positive and get sentiment score using LLM"""
