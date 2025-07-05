@@ -33,7 +33,7 @@ jobs:
         run: python generate_daily.py
 
       - name: Cleanup old files
-        run: python scripts/cleanup_old_files.py
+        run: python scripts/cleanup.py
 
         
       - name: Commit and push generated content

@@ -37,9 +37,10 @@ class LLMAnalyzer:
     """Handle all LLM interactions for sentiment analysis, personality generation, and image prompts"""
     
     def __init__(self, openai_api_key: str = None, model: str = "gpt-4.1-mini", use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
+
         self.client = OpenAI(api_key=openai_api_key) if openai_api_key else None
-        response = self.client.models.list()
-        print("Models available:", [m.id for m in response.data])
+        # response = self.client.models.list()
+        # print("Models available:", [m.id for m in response.data])
         self.model = model
         self.use_dall_e = use_dall_e
 
@@ -481,27 +482,37 @@ class GoodNewsScraper:
         
         self.news_sources = [
             # Global general news
-            "https://feeds.bbci.co.uk/news/rss.xml",
+            # "https://feeds.bbci.co.uk/news/rss.xml",
             "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
             "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
-
-            # Science
             "https://www.sciencedaily.com/rss/top.xml",
             "https://www.nature.com/nature.rss",
             "https://feeds.feedburner.com/ConservationInternationalBlog",
             "https://www.nasa.gov/rss/dyn/breaking_news.rss",
             "http://earth911.com/feed/",
             "https://grist.org/feed/",
-            "https://www.hrw.org/news.rss"
+            "https://www.hrw.org/rss/news",
+            "https://hrp.law.harvard.edu/feed",
+            "https://www.hhrjournal.org/category/blog/feed/",
+            "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
         ]
     def fetch_rss_feed(self, url: str) -> List[Dict]:
         """Fetch and parse RSS feed"""
         try:
-            response = requests.get(url, timeout=10)
+            headers = {
+                "User-Agent": "Mozilla/5.0 (compatible; MyRSSReader/1.0)"
+            }
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()  # raise exception for HTTP errors
+
             feed = feedparser.parse(response.content)
-            
+
+            print("Feed parsing status:", feed.bozo)
+            if feed.bozo:
+                print("Parsing error:", feed.bozo_exception)
+
             articles = []
-            for entry in feed.entries[:15]:  # Limit to recent articles
+            for entry in feed.entries[:20]:  # Limit to recent articles
                 articles.append({
                     'title': entry.get('title', ''),
                     'summary': entry.get('summary', ''),
@@ -509,6 +520,7 @@ class GoodNewsScraper:
                     'published': entry.get('published_parsed', None),
                     'source': feed.feed.get('title', url)
                 })
+
             return articles
         except Exception as e:
             print(f"Error fetching {url}: {e}")
@@ -517,7 +529,7 @@ class GoodNewsScraper:
     def is_recent_article(self, published_date: datetime, days_back: int = 1) -> bool:
         """Check if article was published within the specified number of days"""
         today = datetime.now().date()
-        yesterday = today - timedelta(days=1)
+        yesterday = today - timedelta(days=days_back)
         return published_date.date() >= yesterday
     
     def is_yesterday_article(self, published_date: datetime) -> bool:
@@ -553,7 +565,7 @@ class GoodNewsScraper:
                             published_date = datetime.now()
 
                     # Check if article is recent enough BEFORE analysis
-                    if not self.is_recent_article(published_date):
+                    if not self.is_recent_article(published_date, 1):
                         # print(
                         #     f"⏰ Skipping old article: {article_data['title'][:50]}... "
                         #     f"(Published: {published_date.strftime('%Y-%m-%d')})"
@@ -630,6 +642,7 @@ class GoodNewsScraper:
 def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, personality='darth_vader', max_articles=10, generate_images=True):
     scraper = GoodNewsScraper(llm_api_key=openai_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
     articles = scraper.scrape_and_analyze_news(generate_images=generate_images)
+    return
     # presentations = scraper.present_news_with_personality(articles, personality)
     articles_by_category = defaultdict(list)
     for article in articles:
