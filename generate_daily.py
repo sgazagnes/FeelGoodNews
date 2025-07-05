@@ -15,7 +15,9 @@ def random_personality_for_today():
 openai_api_key = os.getenv("OPENAI_API_KEY")
 cf_api_token = os.getenv("CLOUDFLARE_API_TOKEN")
 cf_account_id = os.getenv("CLOUDFLARE_ACCOUNT_ID")
-
+print("OPENAI_API_KEY present?", bool(os.getenv("OPENAI_API_KEY")))
+print("CF_API_TOKEN present?", bool(os.getenv("CF_API_TOKEN")))
+print("CF_ACCOUNT_ID present?", bool(os.getenv("CF_ACCOUNT_ID")))
 personality = "gollum"#random_personality_for_today()
 print(f"✨ Today's personality: {personality}")
 

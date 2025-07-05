@@ -38,6 +38,8 @@ class LLMAnalyzer:
     
     def __init__(self, openai_api_key: str = None, model: str = "gpt-4.1-mini", use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
         self.client = OpenAI(api_key=openai_api_key) if openai_api_key else None
+        response = self.client.models.list()
+        print("Models available:", [m.id for m in response.data])
         self.model = model
         self.use_dall_e = use_dall_e
 
@@ -101,22 +103,22 @@ class LLMAnalyzer:
         """
         
         if self.client:
-            try:
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=[
-                        {"role": "system", "content": "You are an expert at analyzing news sentiment and identifying positive, uplifting stories."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.3,
-                    max_tokens=300
-                )
-                
-                result = json5.loads(response.choices[0].message.content)
-                return result
-            except Exception as e:
-                print(f"LLM Analysis Error: {e}")
-                return self._fallback_analysis(title, content)
+            # try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are an expert at analyzing news sentiment and identifying positive, uplifting stories."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.3,
+                max_tokens=300
+            )
+            
+            result = json5.loads(response.choices[0].message.content)
+            return result
+            # except Exception as e:
+            #     print(f"LLM Analysis Error: {e}")
+            #     return self._fallback_analysis(title, content)
         else:
             return prompt
     
