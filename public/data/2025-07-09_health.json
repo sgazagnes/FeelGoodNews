@@ -1,0 +1,25 @@
+{
+  "personality": null,
+  "timestamp": "2025-07-09T18:05:09.629010",
+  "category": "Health",
+  "articles": [
+    {
+      "title": "Matching your workouts to your personality could make exercising more enjoyable and give you better results",
+      "content": "Less than a quarter of us hit WHO activity targets, but a new UCL study suggests the trick may be matching workouts to our personalities: extroverts thrive in high-energy group sports, neurotics prefer private bursts with breaks, and everyone sees stress levels drop when they find exercise they enjoy.",
+      "url": "https://www.sciencedaily.com/releases/2025/07/250708045651.htm",
+      "source": "Latest Science News -- ScienceDaily",
+      "published": "2025-07-09",
+      "sentiment_score": 0.85,
+      "reasoning": "The article presents a positive scientific insight that tailoring workouts to personality types can increase exercise enjoyment and effectiveness, which can help more people meet health guidelines and reduce stress.",
+      "category": "Health",
+      "personality_title": "Find your perfect workout by matching it to your personality",
+      "personality_presentation": "**Context**\nMost of us don’t get enough exercise to meet health guidelines, and that can make staying active feel like a tough chore.\n\n**What happened**\nA new study from University College London found that choosing workouts that fit your personality can make exercise more fun and effective.\n\n**Impact**\nFor example, outgoing people enjoy energetic group sports, while those who worry more like quiet, private exercise with breaks. Everyone feels less stressed when they do workouts they love.\n\n**What's next**\nThis insight can help more people find the right kind of activity for them, making it easier to stay healthy and happy.\n\n**One-sentence takeaway**\nMatching your exercise to your personality could be the key to enjoying workouts and feeling better every day.",
+      "personality_title_fr": "Trouvez l'entraînement idéal en l'adaptant à votre personnalité",
+      "personality_presentation_fr": "**Contexte**\nLa plupart d'entre nous ne font pas assez d'exercice pour respecter les recommandations en matière de santé, ce qui peut donner l'impression que rester actif est une corvée.\n\n**Ce qui s'est passé**\nUne nouvelle étude de l'University College London a révélé que le fait de choisir des séances d'entraînement adaptées à votre personnalité peut rendre l'exercice plus amusant et plus efficace.\n\n**Impact**\nPar exemple, les personnes extraverties apprécient les sports de groupe énergiques, tandis que celles qui s'inquiètent davantage aiment les exercices calmes, en privé, avec des pauses. Tout le monde se sent moins stressé lorsqu'il fait des exercices qu'il aime.\n\n**Qu'est-ce qu'on fait maintenant** ?\nCes connaissances peuvent aider un plus grand nombre de personnes à trouver le type d'activité qui leur convient, ce qui leur permettra de rester plus facilement en bonne santé et heureux.\n\n**En une phrase**\nAdapter son activité physique à sa personnalité pourrait être la clé pour apprécier les séances d'entraînement et se sentir mieux chaque jour.",
+      "personality_title_es": "Encuentra tu entrenamiento perfecto adaptándolo a tu personalidad",
+      "personality_presentation_es": "**Contexto**\nLa mayoría de nosotros no hacemos suficiente ejercicio para cumplir las directrices de salud, y eso puede hacer que mantenerse activo parezca una ardua tarea.\n\n**Qué ocurre**\nUn nuevo estudio del University College de Londres descubrió que elegir entrenamientos que se adapten a tu personalidad puede hacer que el ejercicio sea más divertido y efectivo.\n\n**Impacto**\nPor ejemplo, las personas extrovertidas disfrutan de los deportes en grupo llenos de energía, mientras que a las que se preocupan más les gusta el ejercicio tranquilo y privado con descansos. Todo el mundo se siente menos estresado cuando hace entrenamientos que le gustan.\n\n**Qué sigue**\nEsta información puede ayudar a más personas a encontrar el tipo de actividad que más les conviene, lo que facilitará que se mantengan sanas y felices.\n\n**Una frase para llevar a casa**\nAdaptar el ejercicio a tu personalidad podría ser la clave para disfrutar de los entrenamientos y sentirte mejor cada día.",
+      "image_url": "public/images/news_image_Matching-your-workouts-to-your-personality-could-m.png",
+      "image_prompt": "A warm, detailed painting of three distinct, colorful abstract shapes symbolizing different personalities—one vibrant and dynamic shape surrounded by a lively circle of smaller shapes representing extroverts in group activities, another calm, segmented shape with gentle breaks symbolizing neurotics’ private, paced workouts, and a soothing background gradient blending these elements harmoniously to evoke the joy and stress relief found when exercise fits personality, all rendered in soft natural tones."
+    }
+  ]
+}

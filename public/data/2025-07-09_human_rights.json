@@ -1,0 +1,25 @@
+{
+  "personality": null,
+  "timestamp": "2025-07-09T18:05:09.629505",
+  "category": "Human Rights",
+  "articles": [
+    {
+      "title": "Seven-year-old Southport survivor fought to save others, mum tells inquiry",
+      "content": "At a hushed hearing, parents of those who survived the attack by Axel Rudakubana a year ago gave more than two hours of testimony.",
+      "url": "https://www.bbc.com/news/articles/ce83r3jjzjeo",
+      "source": "BBC News",
+      "published": "2025-07-09",
+      "sentiment_score": 0.75,
+      "reasoning": "The story highlights a young survivor's bravery and efforts to help others after a tragic attack, showcasing resilience and courage which can inspire hope and positivity despite the context of violence.",
+      "category": "Human Rights",
+      "personality_title": "Seven-year-old's bravery shines a light on hope after tragedy",
+      "personality_presentation": "**Context**\nA year ago, a terrible attack shook a community in Southport, leaving many scared and saddened.\n\n**What happened**\nAt a quiet hearing, parents shared stories about their children who survived, including a brave seven-year-old who tried to help others during the chaos.\n\n**Impact**\nThis young survivor’s courage reminds us all how even in the darkest moments, hope and heroism can shine through.\n\n**What's next**\nThe stories shared will help guide efforts to support survivors and inspire communities to come together stronger.\n\n**One-sentence takeaway**\nA young child’s bravery in the face of danger shows us the power of courage and hope to heal and inspire.",
+      "personality_title_fr": "La bravoure d'un enfant de sept ans met en lumière l'espoir après la tragédie",
+      "personality_presentation_fr": "**Contexte**\nIl y a un an, une terrible attaque a secoué une communauté à Southport, laissant beaucoup de gens effrayés et attristés.\n\n**Ce qui s'est passé**\nLors d'une audience silencieuse, des parents ont raconté les histoires de leurs enfants qui ont survécu, notamment celle d'un enfant courageux de sept ans qui a essayé d'aider les autres pendant le chaos.\n\n**Impact**\nLe courage de cette jeune survivante nous rappelle que même dans les moments les plus sombres, l'espoir et l'héroïsme peuvent briller.\n\n**Et après**\nLes histoires partagées aideront à orienter les efforts pour soutenir les survivants et inspirer les communautés à s'unir plus fortement.\n\n**En une phrase**\nLa bravoure d'un jeune enfant face au danger nous montre que le courage et l'espoir ont le pouvoir de guérir et d'inspirer.",
+      "personality_title_es": "La valentía de un niño de siete años ilumina la esperanza tras la tragedia",
+      "personality_presentation_es": "**Contexto**\nHace un año, un terrible atentado sacudió a una comunidad de Southport, dejando a muchos asustados y entristecidos.\n\n**Lo que ocurrió**\nEn una audiencia silenciosa, los padres compartieron historias sobre sus hijos que sobrevivieron, incluido un valiente niño de siete años que intentó ayudar a los demás durante el caos.\n\n**Impacto**\nLa valentía de este joven superviviente nos recuerda a todos cómo, incluso en los momentos más oscuros, pueden brillar la esperanza y el heroísmo.\n\n**Qué sigue**\nLas historias compartidas ayudarán a orientar los esfuerzos para apoyar a los supervivientes e inspirar a las comunidades para que se unan con más fuerza.\n\n**Una frase para llevar**\nLa valentía de un niño pequeño ante el peligro nos muestra el poder del coraje y la esperanza para curar e inspirar.",
+      "image_url": "public/images/news_image_Seven-year-old-Southport-survivor-fought-to-save-o.png",
+      "image_prompt": "A detailed, warm painting of a small, protective fox standing bravely in front of a group of smaller fox cubs nestled closely together inside a cozy, softly glowing hollow tree at dusk, with gentle natural earth tones and soft light emphasizing courage and care."
+    }
+  ]
+}

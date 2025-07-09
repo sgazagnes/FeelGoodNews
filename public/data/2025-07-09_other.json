@@ -1,0 +1,25 @@
+{
+  "personality": null,
+  "timestamp": "2025-07-09T18:05:09.629746",
+  "category": "Other",
+  "articles": [
+    {
+      "title": "North america’s oldest pterosaur unearthed in Arizona’s Triassic time capsule",
+      "content": "In the remote reaches of Arizona s Petrified Forest National Park, scientists have unearthed North America's oldest known pterosaur a small, gull-sized flier that once soared above Triassic ecosystems. This exciting find, alongside ancient turtles and armored amphibians, sheds light on a key moment in Earth's history when older animal groups overlapped with evolutionary newcomers. The remarkably preserved fossils, including over 1,200 specimens, offer a rare glimpse into a vibrant world just before a mass extinction reshaped life on Earth.",
+      "url": "https://www.sciencedaily.com/releases/2025/07/250708045700.htm",
+      "source": "Latest Science News -- ScienceDaily",
+      "published": "2025-07-08",
+      "sentiment_score": 0.75,
+      "reasoning": "The discovery of North America's oldest pterosaur is a significant scientific breakthrough that enriches our understanding of Earth's history and evolution. It offers hope and inspiration about the progress of science and the preservation of natural history.",
+      "category": "Other",
+      "personality_title": "North America’s oldest pterosaur spreads its wings in Arizona",
+      "personality_presentation": "**Context**\nIn Arizona’s Petrified Forest National Park, a treasure trove of ancient fossils has been waiting quietly underground.\n\n**What happened**\nScientists discovered North America’s oldest pterosaur, a small bird-like flyer from the Triassic period, along with turtles and armored amphibians.\n\n**Impact**\nThis find gives us a wonderful window into life long ago, showing how different creatures lived together just before a big extinction changed everything.\n\n**What’s next**\nResearchers will continue studying these fossils to learn more about early flying reptiles and the world they lived in.\n\n**One-sentence takeaway**\nA tiny pterosaur from Arizona is helping us soar back in time to understand Earth’s fascinating past.",
+      "personality_title_fr": "Le plus ancien ptérosaure d'Amérique du Nord déploie ses ailes en Arizona",
+      "personality_presentation_fr": "**Contexte**\nDans le parc national de la forêt pétrifiée de l'Arizona, un trésor de fossiles anciens attend tranquillement sous terre.\n\n**Ce qui s'est passé**\nLes scientifiques ont découvert le plus ancien ptérosaure d'Amérique du Nord, un petit oiseau volant de la période du Trias, ainsi que des tortues et des amphibiens cuirassés.\n\n**Impact**\nCette découverte nous offre une merveilleuse fenêtre sur la vie d'autrefois, montrant comment différentes créatures vivaient ensemble juste avant qu'une grande extinction ne vienne tout bouleverser.\n\n**Et maintenant**\nLes chercheurs continueront à étudier ces fossiles pour en savoir plus sur les premiers reptiles volants et le monde dans lequel ils vivaient.\n\n**En une phrase**\nUn minuscule ptérosaure de l'Arizona nous aide à remonter le temps pour comprendre le passé fascinant de la Terre.",
+      "personality_title_es": "El pterosaurio más antiguo de Norteamérica despliega sus alas en Arizona",
+      "personality_presentation_es": "**Contexto**\nEn el Parque Nacional del Bosque Petrificado de Arizona, un tesoro de fósiles antiguos ha estado esperando silenciosamente bajo tierra.\n\n**Lo que ocurrió**\nLos científicos descubrieron el pterosaurio más antiguo de Norteamérica, un pequeño ave voladora del periodo Triásico, junto con tortugas y anfibios acorazados.\n\n**Impacto**\nEste hallazgo nos ofrece una maravillosa ventana a la vida hace mucho tiempo, mostrando cómo convivían diferentes criaturas justo antes de que una gran extinción lo cambiara todo.\n\n**El futuro**\nLos investigadores seguirán estudiando estos fósiles para saber más sobre los primeros reptiles voladores y el mundo en el que vivían.\n\n**Una frase para llevar**\nUn diminuto pterosaurio de Arizona nos ayuda a retroceder en el tiempo para comprender el fascinante pasado de la Tierra.",
+      "image_url": "public/images/news_image_North-americas-oldest-pterosaur-unearthed-in-Arizo.png",
+      "image_prompt": "A detailed, warm-toned painting of a small, gull-sized pterosaur soaring gracefully above a rugged Triassic landscape in Arizona’s Petrified Forest, surrounded below by symbolic representations of ancient turtles and armored amphibians nestled among colorful fossilized logs, all rendered with natural earthy hues and soft light to evoke a vibrant, prehistoric ecosystem just before a great transformation."
+    }
+  ]
+}
