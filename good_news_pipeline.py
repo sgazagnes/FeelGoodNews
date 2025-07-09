@@ -489,18 +489,18 @@ class GoodNewsScraper:
         self.news_sources = [
             # Global general news
             "https://feeds.bbci.co.uk/news/rss.xml",
-            # "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
-            # "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
-            # "https://www.sciencedaily.com/rss/top.xml",
-            # "https://www.nature.com/nature.rss",
-            # "https://feeds.feedburner.com/ConservationInternationalBlog",
-            # "https://www.nasa.gov/rss/dyn/breaking_news.rss",
-            # "http://earth911.com/feed/",
-            # "https://grist.org/feed/",
-            # "https://www.hrw.org/rss/news",
-            # "https://hrp.law.harvard.edu/feed",
-            # "https://www.hhrjournal.org/category/blog/feed/",
-            # "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
+            "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
+            "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
+            "https://www.sciencedaily.com/rss/top.xml",
+            "https://www.nature.com/nature.rss",
+            "https://feeds.feedburner.com/ConservationInternationalBlog",
+            "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+            "http://earth911.com/feed/",
+            "https://grist.org/feed/",
+            "https://www.hrw.org/rss/news",
+            "https://hrp.law.harvard.edu/feed",
+            "https://www.hhrjournal.org/category/blog/feed/",
+            "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
         ]
     def fetch_rss_feed(self, url: str) -> List[Dict]:
         """Fetch and parse RSS feed"""
@@ -748,7 +748,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
         # Limit to 10 articles per category
         articles = articles[:max_articles]
         
-        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}_test.json"
+        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}.json"
         with open(filename, "w", encoding="utf-8") as f:
             json.dump({
                 "personality": personality,
