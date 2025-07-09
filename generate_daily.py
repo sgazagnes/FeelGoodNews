@@ -30,7 +30,7 @@ results = generate_daily_good_news(
     cf_account_id=cf_account_id,
     deepl_api_key=deepl_api_key,
     personality=None,
-    max_articles=1,
+    max_articles=5,
     generate_images=True
 )
 
