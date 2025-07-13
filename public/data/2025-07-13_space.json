@@ -1,0 +1,25 @@
+{
+  "personality": null,
+  "timestamp": "2025-07-13T06:24:48.276102",
+  "category": "Space",
+  "articles": [
+    {
+      "title": "Lonely spacecraft can navigate the stars",
+      "content": "<p>Nature, Published online: 11 July 2025; <a href=\"https://www.nature.com/articles/d41586-025-02108-6\">doi:10.1038/d41586-025-02108-6</a></p>NASA’s New Horizons probe, which hurtled past Pluto in 2015, demonstrates that it can sail through interstellar space using its onboard camera.",
+      "url": "https://www.nature.com/articles/d41586-025-02108-6",
+      "source": "Nature",
+      "published": "2025-07-13",
+      "sentiment_score": 0.75,
+      "reasoning": "The article highlights a scientific and technological breakthrough where the New Horizons spacecraft can navigate interstellar space using its onboard camera, showcasing human ingenuity and progress in space exploration.",
+      "category": "Space",
+      "personality_title": "Lonely spacecraft finds its way using just its camera",
+      "personality_presentation": "**Context**\nNASA’s New Horizons spacecraft amazed the world when it flew past Pluto in 2015, and since then it has been journeying through the vastness of space.\n\n**What happened**\nNow, this spacecraft has shown it can navigate through deep space all on its own, using only its built-in camera to find its way.\n\n**Impact**\nThis clever use of technology proves that spacecraft can travel farther and more independently, opening new doors for exploring the stars.\n\n**What's next**\nScientists will continue to explore how this camera-based navigation can help future missions travel safely through the cosmos.\n\n**One-sentence takeaway**\nNew Horizons is leading the way by using its own eyes to boldly go where no spacecraft has gone before.",
+      "personality_title_fr": "Un vaisseau spatial solitaire trouve son chemin à l'aide de sa seule caméra",
+      "personality_presentation_fr": "**Contexte**\nLa sonde New Horizons de la NASA a émerveillé le monde entier lorsqu'elle a survolé Pluton en 2015, et depuis, elle voyage dans l'immensité de l'espace.\n\n**Ce qui s'est passé**\nAujourd'hui, ce vaisseau spatial a montré qu'il pouvait naviguer dans l'espace lointain tout seul, en utilisant uniquement sa caméra intégrée pour trouver son chemin.\n\n**Impact**\nCette utilisation intelligente de la technologie prouve que les engins spatiaux peuvent voyager plus loin et de manière plus autonome, ouvrant ainsi de nouvelles portes à l'exploration des étoiles.\n\n**Et après**\nLes scientifiques continueront à étudier comment cette navigation par caméra peut aider les futures missions à voyager en toute sécurité dans le cosmos.\n\n**En une phrase**\nNew Horizons ouvre la voie en utilisant ses propres yeux pour aller audacieusement là où aucun engin spatial n'est allé auparavant.",
+      "personality_title_es": "Una nave espacial solitaria encuentra su camino utilizando sólo su cámara",
+      "personality_presentation_es": "**Contexto**\nLa nave espacial New Horizons de la NASA asombró al mundo cuando sobrevoló Plutón en 2015, y desde entonces no ha dejado de viajar por la inmensidad del espacio.\n\n**Lo que pasó**\nAhora, esta nave espacial ha demostrado que puede navegar por el espacio profundo por sí sola, utilizando únicamente su cámara integrada para encontrar el camino.\n\n**Impacto**\nEste ingenioso uso de la tecnología demuestra que las naves espaciales pueden viajar más lejos y de forma más independiente, abriendo nuevas puertas a la exploración de las estrellas.\n\n**El futuro**\nLos científicos seguirán explorando cómo esta navegación basada en cámaras puede ayudar a futuras misiones a viajar de forma segura por el cosmos.\n\n**Una frase para llevar a casa**\nNew Horizons está abriendo el camino utilizando sus propios ojos para llegar donde ninguna nave espacial ha llegado antes.",
+      "image_url": "public/images/news_image_Lonely-spacecraft-can-navigate-the-stars.png",
+      "image_prompt": "A detailed, warm painting of a sleek, glowing spacecraft gently navigating a vast, starry cosmos filled with softly colored distant planets and subtle light trails from stars, symbolizing its solitary journey through interstellar space using its own guiding camera eye, rendered in natural blues, purples, and soft whites without any human figures."
+    }
+  ]
+}
