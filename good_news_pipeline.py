@@ -19,10 +19,53 @@ import hashlib
 from cloudflare import Cloudflare
 from collections import defaultdict
 import deepl
+from bs4 import BeautifulSoup
+from newspaper import Article
+import numpy as np
+from deep_translator import GoogleTranslator
+
+SIMILARITY_THRESHOLD = 0.8
+
+def extract_full_article(url):
+    try:
+        article = Article(url)
+        article.download()
+        article.parse()
+        return article.text
+    except Exception as e:
+        print(f"Failed to extract article from {url}: {e}")
+        return ""
+
+def strip_html(raw_html):
+    return BeautifulSoup(raw_html, "html.parser").get_text()
+
+def extract_article_text(entry):
+    """Return clean full content if available, fallback to summary."""
+    print(entry)
+    if 'content' in entry and entry.content:
+        raw = entry.content[0].get('value', '') or ''
+
+    if 'summary' in entry and entry.summary:
+        raw2 = entry.get('summary', '') or ''
+    return strip_html(raw), strip_html(raw2)
+
+def normalize_text(text: str) -> str:
+    return " ".join(text.strip().split()).lower()
+
+
+
+def cosine_similarity(a, b):
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
+
+def get_recent_dates(days_back):
+    today = datetime.now().date()
+    return [(today - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(days_back)]
+
 
 @dataclass
 class NewsArticle:
     title: str
+    summary: str
     content: str
     url: str
     source: str
@@ -33,6 +76,7 @@ class NewsArticle:
     reasoning: str = ""
     image_url: str = ""
     image_prompt: str = ""
+    embedding: list = None
 
 class LLMAnalyzer:
     """Handle all LLM interactions for sentiment analysis, personality generation, and image prompts"""
@@ -48,13 +92,28 @@ class LLMAnalyzer:
         self.cf_client = Cloudflare(api_token=cf_api_token) if cf_api_token else None
         self.cf_account_id = cf_account_id if cf_account_id else None
         
-    def analyze_news_sentiment(self, title: str, content: str) -> Dict:
+    def get_embedding(self, text: str):
+        # print("Generating embedding for text:", text[:50], "...")
+        try:
+            response = self.client.embeddings.create(
+                input=text,
+                model="text-embedding-3-small"
+            )
+            # print("Generated embedding for text")
+
+            return response.data[0].embedding
+        except Exception as e:
+            print(f"Embedding error: {e}")
+            return None
+        
+    def analyze_news_sentiment(self, title: str, summary:str, content: str) -> Dict:
         """Analyze if news is positive and get sentiment score using LLM"""
         
         prompt = f"""
         Analyze this news article and determine if it's "good news" that would make most people feel positive and hopeful. Give it a sentiment score between 0 and 1, where 1 means it is really uplifting and positive.
 
         TITLE: {title}
+        SUMMARY: {summary}
         CONTENT: {content}
 
         Good news criteria:
@@ -349,7 +408,7 @@ class LLMAnalyzer:
         **Context**
         **What happened**
         **Impact**
-        **What's next**
+        **What's next step**
         **One-sentence takeaway**
 
         At the end, do not add any other commentary or formatting.
@@ -363,7 +422,8 @@ class LLMAnalyzer:
         Do not include any markdown or code fences.
 
         NEWS TITLE: {article.title}
-        NEWS CONTENT: {article.content}
+        NEWS SUMMARY: {article.summary}
+        NEWS CONTENT: {article.content[:500]}
         POSITIVE ELEMENTS: {article.reasoning}
         """
 
@@ -371,13 +431,13 @@ class LLMAnalyzer:
         if self.client:
             try:
                 response = self.client.chat.completions.create(
-                    model=self.model,
+                 model=self.model,
                     messages=[
                         {"role": "system", "content": f" You are a journalist specializing in positive news stories. You excel at simplifying complex topics and making them engaging and easy to understand. Your audience consists of busy people who only have a few minutes each day to stay informed. Your goal is to convey the most important details clearly, in a warm, and easy-to-read style."},
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.8,
-                    max_tokens=500
+                    max_tokens=1000
                 )
                 
                 content = response.choices[0].message.content.strip()
@@ -481,6 +541,36 @@ class LLMAnalyzer:
             'gordon_ramsay': f"Bloody hell, this is beautiful! {article.title}\n\nLook at this gorgeous story: {article.content}\n\nAbsolutely stunning! That's what I call a perfect dish of humanity!"
         }
         return templates.get(personality, templates['darth_vader'])
+    
+    def generate_category_summary(self, articles, category: str) -> str:
+        """Generate a short summary of all good news in a category"""
+        # titles = "\n".join(f"- {a.title}" for a in articles)
+        titles = "\n".join(f"- {a['title']}" for a in articles)
+        prompt = f"""
+        Summarize the following {category} good news headlines into a short paragraph (2–3 sentences), highlighting the main themes and topics.
+
+        Headlines:
+        {titles}
+
+        Do not list the titles again. Do not include information that is not necessary or generic fillers.
+        """
+        if self.client:
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": "You summarize groups of positive news stories in a positive and concise way."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=200
+                )
+                return response.choices[0].message.content.strip()
+            except Exception as e:
+                print(f"Category summary error: {e}")
+                return ""
+        return ""
+
 
 class GoodNewsScraper:
     def __init__(self, llm_api_key: str = None, use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
@@ -488,7 +578,7 @@ class GoodNewsScraper:
         
         self.news_sources = [
             # Global general news
-            "https://feeds.bbci.co.uk/news/rss.xml",
+            # "https://feeds.bbci.co.uk/news/rss.xml",
             "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
             "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
             "https://www.sciencedaily.com/rss/top.xml",
@@ -502,6 +592,35 @@ class GoodNewsScraper:
             "https://www.hhrjournal.org/category/blog/feed/",
             "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
         ]
+
+        self.previous_articles = self.load_previous_articles()
+
+    def load_previous_articles(self) -> List[Dict]:
+                # --- Load Articles --[-
+        articles= []
+        print("📦 Loading articles...")
+        for fname in os.listdir("public/data"):
+            if not fname.endswith(".json"):
+                continue
+            try:
+                date_part = fname.split("_")[0]
+                if date_part in get_recent_dates(2):
+                    with open(os.path.join("public/data", fname), "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        for article in data.get("articles", []):
+                            articles.append({
+                                "summary": normalize_text(article["summary"]),
+                                "title": article["title"],
+                                "category": data.get("category", "Unknown"),
+                                "url": article.get("url", ""),
+                                "embedding": article.get("embedding", "") 
+                            })
+
+            except Exception as e:
+                print(f"Error reading {fname}: {e}")     
+
+        return articles
+
     def fetch_rss_feed(self, url: str) -> List[Dict]:
         """Fetch and parse RSS feed"""
         try:
@@ -519,9 +638,14 @@ class GoodNewsScraper:
 
             articles = []
             for entry in feed.entries[:20]:  # Limit to recent articles
+                # clean_content, clean_summary = extract_article_text(entry)
+                full_content = extract_full_article(entry.get('link', ''))
+                if(full_content == ""):
+                    full_content = strip_html(entry.get('summary', ''))
                 articles.append({
                     'title': entry.get('title', ''),
-                    'summary': entry.get('summary', ''),
+                    'summary': strip_html(entry.get('summary', '')),
+                    'content': full_content,
                     'link': entry.get('link', ''),
                     'published': entry.get('published_parsed', None),
                     'source': feed.feed.get('title', url)
@@ -547,9 +671,6 @@ class GoodNewsScraper:
 
     def scrape_and_analyze_news(self, max_days_back: int = 1, generate_images: bool = True) -> List[NewsArticle]:
         """Scrape news and analyze with LLM for good news detection"""
-        # if country not in self.news_sources:
-        #     print(f"Country '{country}' not supported. Available: {list(self.news_sources.keys())}")
-        #     return []
         
         all_articles = []
         sources = self.news_sources
@@ -572,17 +693,58 @@ class GoodNewsScraper:
 
                     # Check if article is recent enough BEFORE analysis
                     if not self.is_recent_article(published_date, 1):
-                        # print(
-                        #     f"⏰ Skipping old article: {article_data['title'][:50]}... "
-                        #     f"(Published: {published_date.strftime('%Y-%m-%d')})"
-                        # )
+                        continue
+                    # 1. Skip video articles
+                    if "/av/" in article_data["link"] or "video" in article_data["link"]:
                         continue
 
+                    # 2. Skip if title or url was used already
+                    title_lc = article_data["title"].strip().lower()
+                    url = article_data["link"]
+                    if(len(self.previous_articles)>1):
+                        if any(p["title"] == title_lc or p["url"] == url for p in self.previous_articles):
+                            continue
+                    
+                    if(len(all_articles)>1):
+                        if any(p.title == title_lc or p.url == url for p in all_articles):
+                            continue
+
+
+                    embedding = self.llm_analyzer.get_embedding(article_data["summary"])
+                    to_pass = False
+                    if(len(self.previous_articles)>1):
+                        for i, article in enumerate(self.previous_articles):
+                            if article["embedding"] == "":
+                                article["embedding"] = self.llm_analyzer.get_embedding(article["summary"])
+                                time.sleep(0.5)  # be nice to OpenAI rate limits
+                            score = cosine_similarity(embedding, article["embedding"])          
+                            if score >= SIMILARITY_THRESHOLD:   
+                                print(f"Skipping duplicate article: {article_data['title']} (similar to previous article with score {score:.2f})")
+                                to_pass = True
+                                break
+                        if to_pass:
+                            continue
+
+                    # print("Checked embeedings")
+                    if(len(all_articles)>1):
+                        for i, article in enumerate(all_articles):
+                            # print(article)
+                            if not article.embedding:
+                                continue
+                            score = cosine_similarity(embedding, article.embedding)          
+                            if score >= SIMILARITY_THRESHOLD:   
+                                print(f"Skipping duplicate article: {article_data['title']} (similar to previous article with score {score:.2f})")
+                                to_pass = True
+                                break
+                        if to_pass:
+                            continue
+                    
                     # Analyze with LLM
                     print(f"🤖 Analyzing: {article_data['title'][:50]}...")
                     analysis = self.llm_analyzer.analyze_news_sentiment(
                         article_data["title"],
-                        article_data["summary"]
+                        article_data["summary"],
+                        article_data["content"]
                     )
 
                     if analysis["is_good_news"]:
@@ -590,14 +752,16 @@ class GoodNewsScraper:
                         # if recent_count > max_articles:
                         article = NewsArticle(
                             title=article_data['title'],
-                            content=article_data['summary'],
+                            summary=article_data['summary'],
+                            content=article_data['content'],
                             url=article_data['link'],
                             source=article_data['source'],
                             published=published_date,
                             category=analysis['category'],
                             sentiment_score=analysis['sentiment_score'],
                             is_good_news=True,
-                            reasoning=analysis['reasoning']
+                            reasoning=analysis['reasoning'],
+                            embedding=embedding
                         )
                         
                         all_articles.append(article)
@@ -607,9 +771,9 @@ class GoodNewsScraper:
                         
                 except Exception as e:
                     print(f"Error analyzing article: {e}")
-            
+                
             time.sleep(1)  # Be respectful to servers and API limits
-        
+                
         # Sort by sentiment score
         all_articles.sort(key=lambda x: x.sentiment_score, reverse=True)
         return all_articles
@@ -648,13 +812,13 @@ def protect_bold_sections(text):
     """
     Replace **section** with <b>section</b>
     """
-    return re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", text)
+    return re.sub(r"\*\*(.*?)\*\*", r"<b> \1 </b>", text)
 
 def restore_bold_sections(text):
     """
     Replace <b>section</b> with **section**
     """
-    return re.sub(r"<b>(.*?)</b>", r"**\1**", text)
+    return re.sub(r"<b> (.*?) </b>", r"**\1**", text)
 # -------------------------------
 def translate_text_deepl(text, deepl_key, target_lang="FR"):
     auth_key = deepl_key
@@ -667,6 +831,26 @@ def translate_text_deepl(text, deepl_key, target_lang="FR"):
     translated = restore_bold_sections(result.text)
     return translated
 
+
+def translate_text_google(text, target_lang, source_lang="en"):
+
+    # Protect formatting (e.g., bold)
+    protect = protect_bold_sections(text)
+
+    # Initialize translator
+    translator = GoogleTranslator(source=source_lang, target=target_lang.lower())
+
+    # Translate
+    translated_text = translator.translate(protect)
+
+    # Restore formatting
+    translated_text = restore_bold_sections(translated_text)
+
+    print("✅ Translation successful")
+
+    return translated_text
+
+    
 def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, deepl_api_key, personality='darth_vader', max_articles=10, generate_images=True):
     scraper = GoodNewsScraper(llm_api_key=openai_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
     articles = scraper.scrape_and_analyze_news(generate_images=generate_images)
@@ -674,7 +858,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
     for article in articles:
         if article.url not in unique_articles:
             unique_articles[article.url] = article
-
+            # break
     # Convert back to list
     articles = list(unique_articles.values())
 
@@ -716,16 +900,26 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
             ]
             article.image_url = random.choice(fallback_images)
 
-        french_title = translate_text_deepl(presentation_data["title"], deepl_api_key,target_lang="FR")
-        french_text = translate_text_deepl(presentation_data["text"],deepl_api_key, target_lang="FR")
+        # french_title = translate_text_deepl(presentation_data["title"], deepl_api_key,target_lang="FR")
+        # french_text = translate_text_deepl(presentation_data["text"],deepl_api_key, target_lang="FR")
+
+        # # Translate to Spanish
+        # spanish_title = translate_text_deepl(presentation_data["title"], deepl_api_key, target_lang="ES")
+        # spanish_text = translate_text_deepl(presentation_data["text"], deepl_api_key, target_lang="ES")
+        # Translate to French
+        french_title = translate_text_google(presentation_data["title"], target_lang="fr")
+        french_text = translate_text_google(presentation_data["text"], target_lang="fr")
 
         # Translate to Spanish
-        spanish_title = translate_text_deepl(presentation_data["title"], deepl_api_key, target_lang="ES")
-        spanish_text = translate_text_deepl(presentation_data["text"], deepl_api_key, target_lang="ES")
+        spanish_title = translate_text_google(presentation_data["title"], target_lang="es")
+        spanish_text = translate_text_google(presentation_data["text"], target_lang="es")
+
         category = article.category
         results_by_category[category].append({
             "title": article.title,
+            "summary": article.summary,
             "content": article.content,
+            "embedding": article.embedding,
             "url": article.url,
             "source": article.source,
             "published": article.published.strftime("%Y-%m-%d"),
@@ -747,13 +941,18 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
             continue
         # Limit to 10 articles per category
         articles = articles[:max_articles]
-        
-        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}.json"
+        summary_en = scraper.llm_analyzer.generate_category_summary(articles, category)
+        summary_fr = translate_text_deepl(summary_en, deepl_api_key, target_lang="FR")
+        summary_es = translate_text_deepl(summary_en, deepl_api_key, target_lang="ES")
+        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}_test.json"
         with open(filename, "w", encoding="utf-8") as f:
             json.dump({
                 "personality": personality,
                 "timestamp": datetime.now().isoformat(),
                 "category": category,
+                "news_summary": summary_en,
+                "news_summary_fr": summary_fr,
+                "news_summary_es": summary_es,
                 "articles": articles
             }, f, ensure_ascii=False, indent=2)
         

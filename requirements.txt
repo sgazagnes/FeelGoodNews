@@ -5,3 +5,7 @@ openai
 pillow
 cloudflare
 deepl
+beautifulsoup4
+newspaper3k
+numpy
+deep-translator

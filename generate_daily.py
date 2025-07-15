@@ -17,9 +17,9 @@ cf_api_token = os.getenv("CLOUDFLARE_API_TOKEN")
 cf_account_id = os.getenv("CLOUDFLARE_ACCOUNT_ID")
 deepl_api_key = os.getenv("DEEPL_API_KEY")
 print("OPENAI_API_KEY present?", bool(os.getenv("OPENAI_API_KEY")), len(openai_api_key))
-print("CLOUDFLARE_API_TOKEN present?", bool(os.getenv("CLOUDFLARE_API_TOKEN")), len(cf_api_token))
-print("CLOUDFLARE_ACCOUNT_ID present?", bool(os.getenv("CLOUDFLARE_ACCOUNT_ID")), len(cf_account_id))
-print("DEEPL_API_KEY present?", bool(os.getenv("DEEPL_API_KEY")), len(deepl_api_key))
+# print("CLOUDFLARE_API_TOKEN present?", bool(os.getenv("CLOUDFLARE_API_TOKEN")), len(cf_api_token))
+# print("CLOUDFLARE_ACCOUNT_ID present?", bool(os.getenv("CLOUDFLARE_ACCOUNT_ID")), len(cf_account_id))
+# print("DEEPL_API_KEY present?", bool(os.getenv("DEEPL_API_KEY")), len(deepl_api_key))
 # personality = "gollum"#random_personality_for_today()
 # print(f"✨ Today's personality: {personality}")
 
@@ -31,7 +31,7 @@ results = generate_daily_good_news(
     deepl_api_key=deepl_api_key,
     personality=None,
     max_articles=5,
-    generate_images=True
+    generate_images=False
 )
 
 # Save JSON with date and category
@@ -50,4 +50,4 @@ results = generate_daily_good_news(
 #         dst = os.path.join("public/images", filename)
 #         shutil.copyfile(src, dst)
 
-print("✅ Daily news generated and ready for Netlify.")
+# print("✅ Daily news generated and ready for Netlify.")
