@@ -31,7 +31,7 @@ results = generate_daily_good_news(
     deepl_api_key=deepl_api_key,
     personality=None,
     max_articles=5,
-    generate_images=False
+    generate_images=True
 )
 
 # Save JSON with date and category
