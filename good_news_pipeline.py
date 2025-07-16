@@ -944,7 +944,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
         summary_en = scraper.llm_analyzer.generate_category_summary(articles, category)
         summary_fr = translate_text_deepl(summary_en, deepl_api_key, target_lang="FR")
         summary_es = translate_text_deepl(summary_en, deepl_api_key, target_lang="ES")
-        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}_test.json"
+        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}.json"
         with open(filename, "w", encoding="utf-8") as f:
             json.dump({
                 "personality": personality,
