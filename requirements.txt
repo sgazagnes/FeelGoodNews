@@ -9,3 +9,4 @@ beautifulsoup4
 newspaper3k
 numpy
 deep-translator
+lxml_html_clean
