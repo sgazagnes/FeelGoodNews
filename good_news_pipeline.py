@@ -399,9 +399,9 @@ class LLMAnalyzer:
         
         
         prompt = f"""
-        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Write in a warm, storytelling tone.
+        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Write in a warm, storytelling tone, but focusing on the news topic and details, without unnecessary fillers.
 
-        Write the news as a structured text using the following sections. **Each section must start with the section title in bold (using double asterisks) and normal capitalization.** Then write one or two short sentences. Leave an empty line between sections.
+        Write the news as a structured text using the following sections. **Each section must start with the section title in bold (using double asterisks) and normal capitalization.** Then write a short paragraph. Leave an empty line between sections.
 
         Here are the sections:
 
@@ -547,7 +547,7 @@ class LLMAnalyzer:
         # titles = "\n".join(f"- {a.title}" for a in articles)
         titles = "\n".join(f"- {a['title']}" for a in articles)
         prompt = f"""
-        Summarize the following {category} good news headlines into a short paragraph (2–3 sentences), highlighting the main themes and topics.
+        Summarize the following {category} good news headlines into 2–3 sentences highlighting the main themes and topics.
 
         Headlines:
         {titles}
