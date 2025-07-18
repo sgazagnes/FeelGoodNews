@@ -23,18 +23,61 @@ from bs4 import BeautifulSoup
 from newspaper import Article
 import numpy as np
 from deep_translator import GoogleTranslator
+from newspaper import network
+
+# network.USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+from newspaper import Config
+
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+
+# add your proxy information
+
+config = Config()
+config.browser_user_agent = USER_AGENT
+config.request_timeout = 10
 
 SIMILARITY_THRESHOLD = 0.8
 
 def extract_full_article(url):
     try:
-        article = Article(url)
+        article = Article(url.strip())
         article.download()
         article.parse()
         return article.text
     except Exception as e:
-        print(f"Failed to extract article from {url}: {e}")
+        print(f"Failed to extract article with newspappers from {url}: {e}")
+        return extract_full_article_fallback(url)
+    #     print(f"Failed to extract article from {url}")
+    #     return ""
+
+def extract_full_article_fallback(url):
+    headers = {
+        "User-Agent": USER_AGENT,
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Referer": "https://www.google.com/",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1"
+        }
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        content_section = soup.find('section', class_='article__content')
+        if content_section:
+            paragraphs = content_section.find_all('p')
+            return '\n'.join(p.get_text() for p in paragraphs)
+        else:
+            return ""
+    except Exception as e:
+        print(f"Twice Failed to extract article from {url}: {e}")
+        print("")
         return ""
+    
 
 def strip_html(raw_html):
     return BeautifulSoup(raw_html, "html.parser").get_text()
@@ -110,7 +153,7 @@ class LLMAnalyzer:
         """Analyze if news is positive and get sentiment score using LLM"""
         
         prompt = f"""
-        Analyze this news article and determine if it's "good news" that would make most people feel positive and hopeful. Give it a sentiment score between 0 and 1, where 1 means it is really uplifting and positive.
+        Analyze this news article and determine if it's "good news" that would make most people feel positive and hopeful. Give it a sentiment score between 0 and 1, where 1 means it is really uplifting and positive, and is likely to interest a wide audience.
 
         TITLE: {title}
         SUMMARY: {summary}
@@ -399,7 +442,7 @@ class LLMAnalyzer:
         
         
         prompt = f"""
-        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Write in a warm, storytelling tone, but focusing on the news topic and details, without unnecessary fillers.
+        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Write in a warm, storytelling tone, but focusing on the news topic and details, without unnecessary fillers. When summarizing actions, policies, or tips that led to the positive outcome, **briefly explain what they are and how they helped**, so the reader can understand. Keep each section concise and informative.
 
         Write the news as a structured text using the following sections. **Each section must start with the section title in bold (using double asterisks) and normal capitalization.** Then write a short paragraph. Leave an empty line between sections.
 
@@ -411,12 +454,16 @@ class LLMAnalyzer:
         **What's next step**
         **One-sentence takeaway**
 
-        At the end, do not add any other commentary or formatting.
+        Once you finished, translate the text into french first, and then spaning. At the end, do not add any other commentary or formatting.
 
         Respond ONLY in JSON format like this:
         {{
         "title": "A short, catchy headline in your style (capitalize only the first letter)",
         "text": "All the sections above, separated by line breaks."
+        "title_fr": "The title translated into French",
+        "text_fr": "French translation of the sections above",
+        "title_es": "The title translated into Spanish",
+        "text_es": "Spanish translation of the sections above"
         }}
 
         Do not include any markdown or code fences.
@@ -547,8 +594,7 @@ class LLMAnalyzer:
         # titles = "\n".join(f"- {a.title}" for a in articles)
         titles = "\n".join(f"- {a['title']}" for a in articles)
         prompt = f"""
-        Summarize the following {category} good news headlines into 2–3 sentences highlighting the main themes and topics.
-
+        Summarize the following {category} good news headlines into one sentence highlighting the main themes of today's news.
         Headlines:
         {titles}
 
@@ -579,18 +625,28 @@ class GoodNewsScraper:
         self.news_sources = [
             # Global general news
             # "https://feeds.bbci.co.uk/news/rss.xml",
-            "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
-            "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
-            "https://www.sciencedaily.com/rss/top.xml",
-            "https://www.nature.com/nature.rss",
-            "https://feeds.feedburner.com/ConservationInternationalBlog",
-            "https://www.nasa.gov/rss/dyn/breaking_news.rss",
-            "http://earth911.com/feed/",
-            "https://grist.org/feed/",
-            "https://www.hrw.org/rss/news",
-            "https://hrp.law.harvard.edu/feed",
-            "https://www.hhrjournal.org/category/blog/feed/",
-            "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
+            # "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
+            # "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
+            # "https://www.sciencedaily.com/rss/top.xml",
+            # "https://www.nature.com/nature.rss",
+            # "https://feeds.feedburner.com/ConservationInternationalBlog",
+            # "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+            # "http://earth911.com/feed/",
+            # "https://grist.org/feed/",
+            # "https://www.hrw.org/rss/news",
+            # "https://hrp.law.harvard.edu/feed",
+            # "https://www.hhrjournal.org/category/blog/feed/",
+            # "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
+            "https://www.france24.com/en/earth/rss",
+            "https://www.france24.com/en/business/rss",
+            "https://www.france24.com/en/culture/rss",
+            "https://www.france24.com/en/earth/rss",
+            "https://www.france24.com/en/health/rss"
+            # "https://www.lemonde.fr/en/culture/rss_full.xml",
+            # "https://www.lemonde.fr/en/environment/rss_full.xml",
+            # "https://www.lemonde.fr/en/climate-change/rss_full.xml",
+
+
         ]
 
         self.previous_articles = self.load_previous_articles()
@@ -907,12 +963,12 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
         # spanish_title = translate_text_deepl(presentation_data["title"], deepl_api_key, target_lang="ES")
         # spanish_text = translate_text_deepl(presentation_data["text"], deepl_api_key, target_lang="ES")
         # Translate to French
-        french_title = translate_text_google(presentation_data["title"], target_lang="fr")
-        french_text = translate_text_google(presentation_data["text"], target_lang="fr")
+        # french_title = translate_text_google(presentation_data["title"], target_lang="fr")
+        # french_text = translate_text_google(presentation_data["text"], target_lang="fr")
 
-        # Translate to Spanish
-        spanish_title = translate_text_google(presentation_data["title"], target_lang="es")
-        spanish_text = translate_text_google(presentation_data["text"], target_lang="es")
+        # # Translate to Spanish
+        # spanish_title = translate_text_google(presentation_data["title"], target_lang="es")
+        # spanish_text = translate_text_google(presentation_data["text"], target_lang="es")
 
         category = article.category
         results_by_category[category].append({
@@ -928,10 +984,10 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
             "category": category,
             "personality_title": presentation_data["title"],
             "personality_presentation": presentation_data["text"],
-            "personality_title_fr": french_title,
-            "personality_presentation_fr": french_text,
-            "personality_title_es": spanish_title,
-            "personality_presentation_es": spanish_text,
+            "personality_title_fr": presentation_data["title_fr"],
+            "personality_presentation_fr": presentation_data["text_fr"],
+            "personality_title_es": presentation_data["title_es"],
+            "personality_presentation_es": presentation_data["text_es"],
             "image_url": article.image_url,
             "image_prompt": article.image_prompt
         })
@@ -944,7 +1000,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
         summary_en = scraper.llm_analyzer.generate_category_summary(articles, category)
         summary_fr = translate_text_deepl(summary_en, deepl_api_key, target_lang="FR")
         summary_es = translate_text_deepl(summary_en, deepl_api_key, target_lang="ES")
-        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}.json"
+        filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}_test.json"
         with open(filename, "w", encoding="utf-8") as f:
             json.dump({
                 "personality": personality,

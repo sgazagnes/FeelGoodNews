@@ -2,7 +2,7 @@ name: Generate Daily Good News
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Runs every day at 6am UTC
+    - cron: '0 4 * * *'  # Runs every day at 4am UTC
   workflow_dispatch:     # Allows you to run it manually anytime
 
 permissions:
