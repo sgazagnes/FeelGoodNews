@@ -484,7 +484,7 @@ class LLMAnalyzer:
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.8,
-                    max_tokens=1000
+                    max_tokens=2000
                 )
                 
                 content = response.choices[0].message.content.strip()
