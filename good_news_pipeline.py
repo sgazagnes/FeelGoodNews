@@ -488,6 +488,7 @@ class LLMAnalyzer:
                 )
                 
                 content = response.choices[0].message.content.strip()
+                print(content)
                 if content.startswith("```"):
                     content = content.split("\n", 1)[1]
                     content = content.rsplit("```", 1)[0]
