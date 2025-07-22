@@ -443,7 +443,7 @@ class LLMAnalyzer:
         
         
         prompt = f"""
-        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Write in a warm, storytelling tone, but focusing on the news topic and details, without unnecessary fillers. When summarizing actions, policies, or tips that led to the positive outcome, **briefly explain what they are and how they helped**, so the reader can understand. Keep each section concise and informative.
+        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Write in a warm, storytelling tone, but focusing on the news topic and details, without unnecessary fillers. When summarizing actions, policies, or tips that led to the positive outcome, **briefly explain what they are and how they helped**, so the reader can understand. E.g., if an article is about a new methods, explain what this method is. Keep each section concise and informative.
 
         Write the news as a structured text using the following sections. **Each section must start with the section title in bold (using double asterisks) and normal capitalization.** Then write a short paragraph. Leave an empty line between sections.
 
