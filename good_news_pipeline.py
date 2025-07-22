@@ -152,12 +152,13 @@ class LLMAnalyzer:
     def analyze_news_sentiment(self, title: str, summary:str, content: str) -> Dict:
         """Analyze if news is positive and get sentiment score using LLM"""
         
+        #CONTENT: {content}
         prompt = f"""
         Analyze this news article and determine if it's "good news" that would make most people feel positive and hopeful. Give it a sentiment score between 0 and 1, where 1 means it is really uplifting and positive, and is likely to interest a wide audience.
 
         TITLE: {title}
         SUMMARY: {summary}
-        CONTENT: {content}
+        
 
         Good news criteria:
         - Stories about people helping others, acts of kindness, charity
@@ -301,7 +302,7 @@ class LLMAnalyzer:
             - Includes only natural and simple colors
             - Is family-friendly
             - Does NOT depict real human figures (use symbolic elements, silhouettes, objects, animals, landscapes, or abstract scenes)
-            - Avoids any text or words
+            - Do NOT include any text or words
             - **Clearly depicts the extracted subjects or themes without generic symbols (like trees, butterflies, or sunshine) unless they are explicitly part of the story**
 
 
@@ -643,11 +644,6 @@ class GoodNewsScraper:
             "https://www.france24.com/en/culture/rss",
             "https://www.france24.com/en/earth/rss",
             "https://www.france24.com/en/health/rss"
-            # "https://www.lemonde.fr/en/culture/rss_full.xml",
-            # "https://www.lemonde.fr/en/environment/rss_full.xml",
-            # "https://www.lemonde.fr/en/climate-change/rss_full.xml",
-
-
         ]
 
         self.previous_articles = self.load_previous_articles()
