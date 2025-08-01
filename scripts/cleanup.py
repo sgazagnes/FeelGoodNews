@@ -31,7 +31,7 @@ for filename in os.listdir(FOLDER):
                         data = json.load(f)
                         for article in data.get("articles", []):
                             image_path = article.get("image_url", "")
-                            if image_path.startswith(IMAGE_PREFIX) and os.path.exists(image_path):
+                            if image_path.startswith(IMAGE_PREFIX) and os.path.exists(image_path) and 'fallback' not in image_path:
                                 os.remove(image_path)
                                 deleted_images.append(image_path)
                 except Exception as e:

@@ -154,8 +154,13 @@ class LLMAnalyzer:
         
         #CONTENT: {content}
         prompt = f"""
-        Analyze this news article and determine if it's "good news" that would make most people feel positive and hopeful. Give it a sentiment score between 0 and 1, where 1 means it is really uplifting and positive, and is likely to interest a wide audience.
+        Analyze this news article and decide if it's truly **inspiring good news** that would make most people feel **hopeful, curious, or emotionally uplifted**. 
 
+        Give it a **sentiment score** between 0 and 1, where:
+        - **1.0** means the story is **deeply positive, emotionally moving**, and likely to **inspire or engage a wide audience**
+        - **0.0** means it is **neutral, irrelevant, negative**, or **not very engaging**
+
+        ### ARTICLE
         TITLE: {title}
         SUMMARY: {summary}
         
@@ -164,7 +169,7 @@ class LLMAnalyzer:
         - Stories about people helping others, acts of kindness, charity
         - Scientific breakthroughs, medical advances, cures
         - Environmental progress, conservation successes
-        - Educational achievements, scholarships, literacy programs
+        - Educational achievements, literacy programs
         - Community coming together, cooperation, unity
         - Individual achievements that inspire others
         - Government policies that benefit citizens
@@ -181,8 +186,8 @@ class LLMAnalyzer:
         - Health crises, disease outbreaks
         - Environmental destruction
         - Celebrity scandals or gossip
-        - Negative political news
         - Corporate controversies
+        - TRUMP
 
         Then, select the **single most appropriate category** for this news story. You must choose **exactly one** of the following categories:
 
@@ -296,13 +301,13 @@ class LLMAnalyzer:
 
             **Second**, describe how these elements could be shown symbolically or through metaphors that are directly relevant to the article.
 
-            **Third**, write a **single image prompt (1–2 sentences max)** that:
-            - Is warm and positive
-            - Makes sure the final image is a detailed drawing or painting (not photorealistic)
+            **Third**, write a **single image prompt (1–2 sentences max)** so that the final image is:
+            - warm and positive
+            - a detailed drawing or painting (not photorealistic)
             - Includes only natural and simple colors
-            - Is family-friendly
+            - DOES NOT CONTAIN ANY NSFW CONTENT!
             - Does NOT depict real human figures (use symbolic elements, silhouettes, objects, animals, landscapes, or abstract scenes)
-            - Do NOT include any text or words
+            - Do NOT include any text or words, like the artist signature or title
             - **Clearly depicts the extracted subjects or themes without generic symbols (like trees, butterflies, or sunshine) unless they are explicitly part of the story**
 
 
@@ -443,35 +448,43 @@ class LLMAnalyzer:
         
         
         prompt = f"""
-        Present this good news story in your style, using clear, simple, and friendly language. Avoid jargon or complicated words. Write in a warm, storytelling tone, but focusing on the news topic and details, without unnecessary fillers. When summarizing actions, policies, or tips that led to the positive outcome, **briefly explain what they are and how they helped**, so the reader can understand. E.g., if an article is about a new methods, explain what this method is. Keep each section concise and informative.
+        You're a journalist with a talent for storytelling and clarity. Write a compelling, **structured news summary** for this positive story, designed to **inform and inspire** — without exaggeration, repetition, or fluff.
 
-        Write the news as a structured text using the following sections. **Each section must start with the section title in bold (using double asterisks) and normal capitalization.** Then write a short paragraph. Leave an empty line between sections.
+        Use **simple, clear language** that a wide audience can understand. Do not include empty inspirational sentences like "this is great for humanity" or "this gives hope to the world." Every sentence should add real information or detail.
 
-        Here are the sections:
+        Follow this structure, and **start each section title in bold with double asterisks** and normal capitalization (not all caps):
 
-        **Context**
-        **What happened**
-        **Impact**
-        **What's next step**
-        **One-sentence takeaway**
+        **Context** – Explain the background or situation briefly  
+        **What happened** – Describe the core news story  
+        **Impact** – Describe why is it unique or important, and be specific about why, do not overgeneralize.  
+        **What's next step** – What will happen next or what this might lead to  
+        **One-sentence takeaway** – Summarize the essence in a single, informative line
 
-        Once you finished, translate the text into french first, and then spaning. At the end, do not add any other commentary or formatting.
+        Keep the tone warm but professional. **Avoid repetition across sections**. Introduce the acronyms clearly when they first appear.
 
-        Respond ONLY in JSON format like this:
+        Create an original and natural-sounding headline — short, informative, and attention-grabbing, but not clickbait.
+
+        Then, translate the title and the full structured summary into:
+        - French
+        - Spanish
+
+        Return the full result as valid **JSON**, like this:
         {{
-        "title": "A short, catchy headline in your style (capitalize only the first letter)",
-        "text": "All the sections above, separated by line breaks."
-        "title_fr": "The title translated into French",
-        "text_fr": "French translation of the sections above",
-        "title_es": "The title translated into Spanish",
-        "text_es": "Spanish translation of the sections above"
+        "title": "A catchy but non-clickbait English headline",
+        "text": "Structured English text with sections and line breaks",
+        "title_fr": "French title",
+        "text_fr": "French structured version",
+        "title_es": "Spanish title",
+        "text_es": "Spanish structured version"
         }}
 
-        Do not include any markdown or code fences. Always check that your answer is in valid JSON format.
+        Do not include markdown, comments, or explanations.
+
+        Here is the article:
 
         NEWS TITLE: {article.title}
         NEWS SUMMARY: {article.summary}
-        NEWS CONTENT: {article.content[:500]}
+        NEWS CONTENT: {article.content[:2000]}
         POSITIVE ELEMENTS: {article.reasoning}
         """
 
@@ -627,7 +640,7 @@ class GoodNewsScraper:
         self.news_sources = [
             # Global general news
             # "https://feeds.bbci.co.uk/news/rss.xml",
-            "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
+            # "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
             "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
             "https://www.sciencedaily.com/rss/top.xml",
             "https://www.nature.com/nature.rss",
@@ -636,11 +649,9 @@ class GoodNewsScraper:
             "http://earth911.com/feed/",
             "https://grist.org/feed/",
             "https://www.hrw.org/rss/news",
-            "https://hrp.law.harvard.edu/feed",
             "https://www.hhrjournal.org/category/blog/feed/",
             "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
             "https://www.france24.com/en/earth/rss",
-            "https://www.france24.com/en/business/rss",
             "https://www.france24.com/en/culture/rss",
             "https://www.france24.com/en/earth/rss",
             "https://www.france24.com/en/health/rss"
@@ -657,7 +668,7 @@ class GoodNewsScraper:
                 continue
             try:
                 date_part = fname.split("_")[0]
-                if date_part in get_recent_dates(2):
+                if date_part in get_recent_dates(6):
                     with open(os.path.join("public/data", fname), "r", encoding="utf-8") as f:
                         data = json.load(f)
                         for article in data.get("articles", []):
@@ -762,35 +773,44 @@ class GoodNewsScraper:
                         if any(p.title == title_lc or p.url == url for p in all_articles):
                             continue
 
+                    # Generate safe filename
+                    safe_title = re.sub(r'[^\w\s-]', '', article_data["title"]).strip()
+                    safe_title = re.sub(r'[-\s]+', '-', safe_title)[:50]
+                    filename = f"public/images/news_image_{safe_title}.png"
 
-                    embedding = self.llm_analyzer.get_embedding(article_data["summary"])
-                    to_pass = False
-                    if(len(self.previous_articles)>1):
-                        for i, article in enumerate(self.previous_articles):
-                            if article["embedding"] == "":
-                                article["embedding"] = self.llm_analyzer.get_embedding(article["summary"])
-                                time.sleep(0.5)  # be nice to OpenAI rate limits
-                            score = cosine_similarity(embedding, article["embedding"])          
-                            if score >= SIMILARITY_THRESHOLD:   
-                                print(f"Skipping duplicate article: {article_data['title']} (similar to previous article with score {score:.2f})")
-                                to_pass = True
-                                break
-                        if to_pass:
-                            continue
+                    # Check if the file already exists
+                    # if os.path.exists(filename):
+                    #     print(f"✅ Image already exists: {filename}")
+                    #     continue
 
-                    # print("Checked embeedings")
-                    if(len(all_articles)>1):
-                        for i, article in enumerate(all_articles):
-                            # print(article)
-                            if not article.embedding:
-                                continue
-                            score = cosine_similarity(embedding, article.embedding)          
-                            if score >= SIMILARITY_THRESHOLD:   
-                                print(f"Skipping duplicate article: {article_data['title']} (similar to previous article with score {score:.2f})")
-                                to_pass = True
-                                break
-                        if to_pass:
-                            continue
+                    # embedding = self.llm_analyzer.get_embedding(article_data["summary"])
+                    # to_pass = False
+                    # if(len(self.previous_articles)>1):
+                    #     for i, article in enumerate(self.previous_articles):
+                    #         if article["embedding"] == "":
+                    #             article["embedding"] = self.llm_analyzer.get_embedding(article["summary"])
+                    #             time.sleep(0.5)  # be nice to OpenAI rate limits
+                    #         score = cosine_similarity(embedding, article["embedding"])          
+                    #         if score >= SIMILARITY_THRESHOLD:   
+                    #             print(f"Skipping duplicate article: {article_data['title']} (similar to previous article with score {score:.2f})")
+                    #             to_pass = True
+                    #             break
+                    #     if to_pass:
+                    #         continue
+
+                    # # print("Checked embeedings")
+                    # if(len(all_articles)>1):
+                    #     for i, article in enumerate(all_articles):
+                    #         # print(article)
+                    #         if not article.embedding:
+                    #             continue
+                    #         score = cosine_similarity(embedding, article.embedding)          
+                    #         if score >= SIMILARITY_THRESHOLD:   
+                    #             print(f"Skipping duplicate article: {article_data['title']} (similar to previous article with score {score:.2f})")
+                    #             to_pass = True
+                    #             break
+                    #     if to_pass:
+                    #         continue
                     
                     # Analyze with LLM
                     print(f"🤖 Analyzing: {article_data['title'][:50]}...")
@@ -814,7 +834,7 @@ class GoodNewsScraper:
                             sentiment_score=analysis['sentiment_score'],
                             is_good_news=True,
                             reasoning=analysis['reasoning'],
-                            embedding=embedding
+                            embedding=None#embedding
                         )
                         
                         all_articles.append(article)
@@ -841,7 +861,7 @@ class GoodNewsScraper:
             print(f"🎪 Creating presentation {i}/{len(articles)}...")
             presentation = self.llm_analyzer.generate_personality_response(article, personality)
             presentations.append(presentation)
-            print(presentation)
+            # print(presentation)
             time.sleep(0.5)
         
         return presentations
@@ -856,7 +876,7 @@ class GoodNewsScraper:
             print(f"🎪 Creating presentation {i}/{len(articles)}...")
             presentation = self.llm_analyzer.generate_summary_response(article, personality)
             presentations.append(presentation)
-            print(presentation)
+            # print(presentation)
             time.sleep(0.5)
         
         return presentations
