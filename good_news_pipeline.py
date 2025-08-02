@@ -154,43 +154,29 @@ class LLMAnalyzer:
         
         #CONTENT: {content}
         prompt = f"""
-        Analyze this news article and decide if it's truly **inspiring good news** that would make most people feel **hopeful, curious, or emotionally uplifted**. 
+        You are a news filter trained to detect genuinely **inspiring good news** — stories that would make most people feel **hopeful, emotionally uplifted, or curious**.
 
-        Give it a **sentiment score** between 0 and 1, where:
-        - **1.0** means the story is **deeply positive, emotionally moving**, and likely to **inspire or engage a wide audience**
-        - **0.0** means it is **neutral, irrelevant, negative**, or **not very engaging**
+        ---
 
-        ### ARTICLE
-        TITLE: {title}
-        SUMMARY: {summary}
+        ### STEP 1: Should this article be discarded?
+        Mark the article as `"is_good_news": false` and assign a **sentiment_score of 0.0** if **any** of the following apply:
+        - The content is **very short** (e.g. headline only, no real substance)
+        - There is **not enough context** to understand the story
+        - It is **not a news article** (e.g. a notice, gallery, event, or social post)
+        - It refers only to an **image**, **video**, or **multimedia content**
+        - It refers to a guide, **how-to**, or **tutorial** that is not a news story
+
+        ---
+
+        ### STEP 2: Sentiment and Categorization
+        If the article is valid, assign a sentiment score on a scale from **0.00 to 1.00**:
+
+        - **1.00** = deeply positive, emotionally moving, highly inspiring, impactful, original and captivating
+        - **0.00** = neutral, irrelevant, negative, too niche, or unengaging
+
+        It is important to focus on the positive impact of the story, and the potential impact it can have on the general reader mood.
         
-
-        Good news criteria:
-        - Stories about people helping others, acts of kindness, charity
-        - Scientific breakthroughs, medical advances, cures
-        - Environmental progress, conservation successes
-        - Educational achievements, literacy programs
-        - Community coming together, cooperation, unity
-        - Individual achievements that inspire others
-        - Government policies that benefit citizens
-        - Economic improvements for ordinary people
-        - Cultural celebrations, positive milestones
-        - Animals being rescued or protected
-        - Technology solving real problems
-        - Recovery stories, overcoming challenges
-
-        NOT good news:
-        - Crime, violence, accidents, disasters
-        - Political conflicts, wars, protests
-        - Economic downturns, layoffs
-        - Health crises, disease outbreaks
-        - Environmental destruction
-        - Celebrity scandals or gossip
-        - Corporate controversies
-        - TRUMP
-
-        Then, select the **single most appropriate category** for this news story. You must choose **exactly one** of the following categories:
-
+        Also assign a **category**, choosing exactly one from this list:
         - Health
         - Environment
         - Technology
@@ -198,18 +184,42 @@ class LLMAnalyzer:
         - Space
         - Other
 
-        Do not invent any other categories. Only respond with one of these exact names.
+        Do **not invent other categories**.
 
+        ---
 
-        Respond in JSON format:
+        ### Good news examples:
+        - Acts of kindness, community help, recovery stories
+        - Breakthroughs in health, science, tech, education
+        - Progress in climate action or conservation
+        - Uplifting animal or nature stories
+        - Economic or human rights policies that benefit general people
+
+        ### Not good news:
+        - Crime, violence, conflict, disasters
+        - Health crises or disease outbreaks
+        - Political scandals, layoffs, protests
+        - Celebrity gossip, corporate controversy
+        - Anything related to TRUMP
+
+        ---
+
+        ### Respond only in this JSON format:
+
         {{
-            "is_good_news": true/false,
-            "sentiment_score": 0.00-1.00,
-            "category": "Health, Environment, Technology, Human Rights, Space or Other",
-            "reasoning": "Brief explanation of why this is or isn't good news",
-            "key_positive_elements": ["list", "of", "positive", "aspects"],
-            "emotional_impact": "uplifting/inspiring/heartwarming/hopeful/etc"
+        "is_good_news": true/false,
+        "sentiment_score": 0.0-1.0,
+        "category": "Health | Environment | Technology | Human Rights | Space | Other",
+        "reasoning": "Brief explanation of your decision",
+        "key_positive_elements": ["point", "form", "list", "of", "good", "aspects"],
+        "emotional_impact": "hopeful/inspiring/uplifting/neutral/etc"
         }}
+
+        ---
+
+        ### 🔎 ARTICLE
+        TITLE: {title}
+        SUMMARY: {summary}
         """
         
         if self.client:
@@ -450,13 +460,13 @@ class LLMAnalyzer:
         prompt = f"""
         You're a journalist with a talent for storytelling and clarity. Write a compelling, **structured news summary** for this positive story, designed to **inform and inspire** — without exaggeration, repetition, or fluff.
 
-        Use **simple, clear language** that a wide audience can understand. Do not include empty inspirational sentences like "this is great for humanity" or "this gives hope to the world." Every sentence should add real information or detail.
+        Write in **simple, clear language** that anyone can understand — no jargon or assumptions of prior knowledge. Avoid generic inspirational phrases like “this is great for humanity” or “this brings hope to the world.” Every sentence should add meaningful information or explanation. Focus on clarity, substance, and accessibility, use examples if needed to convey the message.
 
         Follow this structure, and **start each section title in bold with double asterisks** and normal capitalization (not all caps):
 
         **Context** – Explain the background or situation briefly  
-        **What happened** – Describe the core news story  
-        **Impact** – Describe why is it unique or important, and be specific about why, do not overgeneralize.  
+        **What happened** – Describe the core news story, giving important details about who, when, and how.
+        **Impact** – Describe why is it unique or important, and be specific about why, do not overgeneralize, using a simple language.  
         **What's next step** – What will happen next or what this might lead to  
         **One-sentence takeaway** – Summarize the essence in a single, informative line
 
@@ -778,10 +788,10 @@ class GoodNewsScraper:
                     safe_title = re.sub(r'[-\s]+', '-', safe_title)[:50]
                     filename = f"public/images/news_image_{safe_title}.png"
 
-                    # Check if the file already exists
-                    # if os.path.exists(filename):
-                    #     print(f"✅ Image already exists: {filename}")
-                    #     continue
+                    Check if the file already exists
+                    if os.path.exists(filename):
+                        print(f"✅ Image already exists: {filename}")
+                        continue
 
                     # embedding = self.llm_analyzer.get_embedding(article_data["summary"])
                     # to_pass = False
