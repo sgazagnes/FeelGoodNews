@@ -788,7 +788,6 @@ class GoodNewsScraper:
                     safe_title = re.sub(r'[-\s]+', '-', safe_title)[:50]
                     filename = f"public/images/news_image_{safe_title}.png"
 
-                    Check if the file already exists
                     if os.path.exists(filename):
                         print(f"✅ Image already exists: {filename}")
                         continue
