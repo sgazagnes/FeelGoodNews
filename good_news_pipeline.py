@@ -664,7 +664,8 @@ class GoodNewsScraper:
             "https://www.france24.com/en/earth/rss",
             "https://www.france24.com/en/culture/rss",
             "https://www.france24.com/en/earth/rss",
-            "https://www.france24.com/en/health/rss"
+            "https://www.france24.com/en/health/rss",
+            "https://www.optimistdaily.com/feed/"
         ]
 
         self.previous_articles = self.load_previous_articles()
@@ -981,7 +982,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
             fallback_images = [
                 os.path.join('public/images', filename)
                 for filename in sorted(os.listdir('public/images'))
-                if filename.startswith("inspiration_") 
+                if filename.startswith("fallback") 
             ]
             article.image_url = random.choice(fallback_images)
 
