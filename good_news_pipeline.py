@@ -650,7 +650,7 @@ class GoodNewsScraper:
         self.news_sources = [
             # Global general news
             # "https://feeds.bbci.co.uk/news/rss.xml",
-            # "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
+            "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
             "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
             "https://www.sciencedaily.com/rss/top.xml",
             "https://www.nature.com/nature.rss",
