@@ -653,7 +653,7 @@ class GoodNewsScraper:
             "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
             "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
             "https://www.sciencedaily.com/rss/top.xml",
-            "https://www.nature.com/nature.rss",
+            # "https://www.nature.com/nature.rss",
             "https://feeds.feedburner.com/ConservationInternationalBlog",
             "https://www.nasa.gov/rss/dyn/breaking_news.rss",
             "http://earth911.com/feed/",
@@ -665,7 +665,8 @@ class GoodNewsScraper:
             "https://www.france24.com/en/culture/rss",
             "https://www.france24.com/en/earth/rss",
             "https://www.france24.com/en/health/rss",
-            "https://www.optimistdaily.com/feed/"
+            "https://www.optimistdaily.com/feed/",
+            "https://www.thisiscolossal.com/feed/"
         ]
 
         self.previous_articles = self.load_previous_articles()
@@ -1001,26 +1002,29 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
         # spanish_text = translate_text_google(presentation_data["text"], target_lang="es")
 
         category = article.category
-        results_by_category[category].append({
-            "title": article.title,
-            "summary": article.summary,
-            "content": article.content,
-            "embedding": article.embedding,
-            "url": article.url,
-            "source": article.source,
-            "published": article.published.strftime("%Y-%m-%d"),
-            "sentiment_score": article.sentiment_score,
-            "reasoning": article.reasoning,
-            "category": category,
-            "personality_title": presentation_data["title"],
-            "personality_presentation": presentation_data["text"],
-            "personality_title_fr": presentation_data["title_fr"],
-            "personality_presentation_fr": presentation_data["text_fr"],
-            "personality_title_es": presentation_data["title_es"],
-            "personality_presentation_es": presentation_data["text_es"],
-            "image_url": article.image_url,
-            "image_prompt": article.image_prompt
-        })
+        try:
+            results_by_category[category].append({
+                "title": article.title,
+                "summary": article.summary,
+                "content": article.content,
+                "embedding": article.embedding,
+                "url": article.url,
+                "source": article.source,
+                "published": article.published.strftime("%Y-%m-%d"),
+                "sentiment_score": article.sentiment_score,
+                "reasoning": article.reasoning,
+                "category": category,
+                "personality_title": presentation_data["title"],
+                "personality_presentation": presentation_data["text"],
+                "personality_title_fr": presentation_data["title_fr"],
+                "personality_presentation_fr": presentation_data["text_fr"],
+                "personality_title_es": presentation_data["title_es"],
+                "personality_presentation_es": presentation_data["text_es"],
+                "image_url": article.image_url,
+                "image_prompt": article.image_prompt
+            })
+        except KeyError:
+            print("Article did not work properly")
 
     for category, articles in results_by_category.items():
         if not articles:
