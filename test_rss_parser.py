@@ -6,7 +6,7 @@ def test_rss_parsing():
     # Choose one URL to test (use one with consistent structure like BBC)
     test_url = scraper.news_sources
     
-    for url in test_url[-1:]:
+    for url in test_url[:1]:
         print(f"Fetching articles from: {url}")
         articles = scraper.fetch_rss_feed(url)
 

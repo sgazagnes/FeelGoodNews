@@ -117,7 +117,9 @@ class NewsArticle:
     reasoning: str = ""
     image_url: str = ""
     image_prompt: str = ""
-    embedding: list = None
+    dedupe_key: str = ""            # stable cross-outlet story key
+    # digest_content: str = ""   # new: rich full digest from LLM
+    dedupe_key: str = ""       # new: short key to detect duplicates
 
 class LLMAnalyzer:
     """Handle all LLM interactions for sentiment analysis, personality generation, and image prompts"""
@@ -205,13 +207,12 @@ class LLMAnalyzer:
 
         ---
 
-        ### STEP 1: Should this article be discarded?
-        Mark the article as `"is_good_news": false` and assign a **sentiment_score of 0.0** if **any** of the following apply:
-        - The content is only a headline.
-        - There is **not enough context** to understand the story
+        ### STEP 1: Mark the article as `"is_good_news": false` and assign a **sentiment_score of 0.0** if **any** of the following apply:
+        - There is **not enough context or content** to understand the story
         - It is **not a news article** (e.g. a notice, gallery, event, or social post)
-        - It refers only to an **image**, **video**, or **multimedia content**
-        - It refers to a guide, **how-to**, or **tutorial** that is not a news story
+        - It refers to am **image**, **video**, or **multimedia content**
+        - It refers to a guide, **how-to**, **tutorial**, or list of resources that is not a news story
+        - It refers to a weather change, for example "it will be sunny tomorrow or next week"
 
         ---
 
@@ -223,14 +224,13 @@ class LLMAnalyzer:
 
         It is important to focus on the positive impact of the story, and the potential impact it can have on the general reader mood.
         
-        Also assign a **category**, choosing exactly one from this list:
+        Assign a **category**, choosing exactly one from this list:
         - Health
         - Environment
         - Technology
         - Human Rights
         - Space
         - Other
-
         Do **not invent other categories**.
 
         ---
@@ -251,7 +251,7 @@ class LLMAnalyzer:
 
         ---
 
-        ### Respond only in this JSON format:
+        ### Respond only in this JSON format (no markdown, no extra commentary):
 
         {{
         "is_good_news": true/false,
@@ -259,15 +259,16 @@ class LLMAnalyzer:
         "category": "Health | Environment | Technology | Human Rights | Space | Other",
         "reasoning": "Brief explanation of your decision",
         "key_positive_elements": ["point", "form", "list", "of", "good", "aspects"],
-        "emotional_impact": "hopeful/inspiring/uplifting/neutral/etc"
+        "dedupe_key": "≤10-word noun phrase uniquely identifying this story",
         }}
+
 
         ---
 
         ### 🔎 ARTICLE
         TITLE: {title}
         SUMMARY: {summary}
-        Content: {content[:10000]}  # Limit to 10000 characters to avoid too long prompts
+        Content: {content}
         """
         
         if self.client:
@@ -278,8 +279,8 @@ class LLMAnalyzer:
                     {"role": "system", "content": "You are an expert at analyzing news sentiment and identifying positive, uplifting stories."},
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.3,
-                max_tokens=500
+                temperature=0.4,
+                max_tokens=2000
             )
             self._log_usage("sentiment", response)
             result = json5.loads(response.choices[0].message.content)
@@ -288,41 +289,6 @@ class LLMAnalyzer:
         else:
             return prompt
     
-    def _fallback_analysis(self, title: str, content: str) -> Dict:
-        text = f"{title} {content}".lower()
-
-        positive_indicators = [...]
-        negative_indicators = [...]
-
-        positive_count = ...
-        negative_count = ...
-
-        is_good = ...
-        score = ...
-        
-        # Naive category assignment
-        if any(word in text for word in ['health', 'medical', 'hospital']):
-            category = "Health"
-        elif any(word in text for word in ['environment', 'climate', 'nature']):
-            category = "Environment"
-        elif any(word in text for word in ['technology', 'tech', 'innovation']):
-            category = "Technology"
-        elif any(word in text for word in ['human rights', 'equality', 'justice']):
-            category = "Human Rights"
-        elif any(word in text for word in ['space', 'astronomy', 'stars']):
-            category = "Space"
-        else:
-            category = "Other"
-
-        return {
-            "is_good_news": is_good,
-            "sentiment_score": score,
-            "category": category,
-            "reasoning": f"Found {positive_count} positive and {negative_count} negative indicators",
-            "key_positive_elements": ["fallback analysis"],
-            "emotional_impact": "positive" if is_good else "neutral"
-        }
-
     
     def generate_image_prompt(self, article: NewsArticle) -> str:
         """Generate DALL-E image prompt based on article content"""
@@ -540,7 +506,7 @@ class LLMAnalyzer:
 
         NEWS TITLE: {article.title}
         NEWS SUMMARY: {article.summary}
-        NEWS CONTENT: {article.content[:10000]}
+        NEWS CONTENT: {article.content}
         POSITIVE ELEMENTS: {article.reasoning}
         """
 
@@ -690,6 +656,70 @@ class LLMAnalyzer:
                 return ""
         return ""
 
+    def select_top_articles_with_llm(self, category, articles, max_selected=4):
+    # Prepare the input list for the LLM
+        articles_data = [
+            {
+                "index": i,
+                "title": a.title,
+                "summary": a.summary,
+                "dedupe_key": a.dedupe_key,
+                "sentiment_score": a.sentiment_score
+            }
+            for i, a in enumerate(articles)
+        ]
+
+        prompt = f"""
+            You are selecting the {max_selected} best inspiring news stories for the category "{category}".
+            Each candidate has:
+            - `summary`: short description
+            - `dedupe_key`: short unique ID to detect duplicates
+            - `sentiment_score`: from 0.0 to 1.0, higher means more positive
+
+            Rules for selection:
+            1. Only select **original** stories — never pick two with the same `dedupe_key`.
+            2. Favor **happiness potential**: inspiring human actions, breakthroughs, community efforts, environmental wins, impactful discoveries.
+            3. Ensure **diversity**: do not select very similar topics if others are available.
+            4. Avoid niche, irrelevant, or book promotions.
+            5. Higher sentiment_score is better, but originality and happiness potential matter more.
+
+            Return strictly a JSON list of `index` values (integers) for the {max_selected} chosen articles.
+
+            CANDIDATES:
+            {json.dumps(articles_data, indent=2)}
+            """
+        # print(prompt)
+        if self.client:
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=500
+                )
+                self._log_usage("article_selection", response)
+                try:
+                    content = response.choices[0].message.content.strip()
+                    
+                    if content.startswith("```"):
+                        content = content.split("\n", 1)[1]
+                        content = content.rsplit("```", 1)[0]
+                    if content.startswith('"""'):
+                        content = content.split("\n", 1)[1]
+                        content = content.rsplit('"""', 1)[0]
+                    print("LLM selection content:", content)
+                    selected_indices = json.loads(content)
+                    return [articles[i] for i in selected_indices if 0 <= i < len(articles)]
+                except Exception as e:
+                    print(f"⚠️ LLM selection failed for {category}: {e}")
+                    # fallback to score sort
+                    return sorted(articles, key=lambda x: x.sentiment_score, reverse=True)[:max_selected]
+            except Exception as e:
+                print(f"Category summary error: {e}")
+                return ""
+        return ""
+            
 
 class GoodNewsScraper:
     def __init__(self, llm_api_key: str = None, use_dall_e: bool = False, cf_api_token: str = None, cf_account_id: str = None):
@@ -740,7 +770,7 @@ class GoodNewsScraper:
                                 "title": article["title"],
                                 "category": data.get("category", "Unknown"),
                                 "url": article.get("url", ""),
-                                "embedding": article.get("embedding", "") 
+                                # "embedding": article.get("embedding", "") 
                             })
 
             except Exception as e:
@@ -764,7 +794,7 @@ class GoodNewsScraper:
                 print("Parsing error:", feed.bozo_exception)
 
             articles = []
-            for entry in feed.entries[:20]:  # Limit to recent articles
+            for entry in feed.entries[:15]:  # Limit to recent articles
                 # clean_content, clean_summary = extract_article_text(entry)
                 full_content = extract_full_article(entry.get('link', ''))
                 if(full_content == ""):
@@ -881,7 +911,7 @@ class GoodNewsScraper:
                     #         continue
                     
                     # Analyze with LLM
-                    print(f"🤖 Analyzing news sentiment")
+                    # print(f"🤖 Analyzing news sentiment")
                     analysis = self.llm_analyzer.analyze_news_sentiment(
                         article_data["title"],
                         article_data["summary"],
@@ -902,9 +932,11 @@ class GoodNewsScraper:
                             sentiment_score=analysis['sentiment_score'],
                             is_good_news=True,
                             reasoning=analysis['reasoning'],
-                            embedding=None#embedding
+                            # digest_content=analysis.get("digest_content", ""),  # new
+                            dedupe_key=analysis.get("dedupe_key", "").lower().strip()  # new
                         )
-                        
+
+    
                         all_articles.append(article)
                         print(f"✅ Good news found in {analysis['category']}! Score: {analysis['sentiment_score']:.2f}")
                     else:
@@ -990,7 +1022,9 @@ def translate_text_google(text, target_lang, source_lang="en"):
 
     return translated_text
 
-    
+
+
+
 def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_account_id, deepl_api_key, personality='darth_vader', max_articles=10, generate_images=True):
     scraper = GoodNewsScraper(llm_api_key=openai_api_key, use_dall_e=use_dall_e, cf_api_token=cf_api_token, cf_account_id=cf_account_id)
     articles = scraper.scrape_and_analyze_news(generate_images=generate_images)
@@ -1007,12 +1041,26 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
         category = getattr(article, "category", "Other") or "Other"
         articles_by_category[category].append(article)
 
+    # selected_articles = []
+    # for category, category_articles in articles_by_category.items():
+    #     sorted_articles = sorted(category_articles, key=lambda x: x.sentiment_score, reverse=True)
+    #     top_10 = sorted_articles[:max_articles]
+    #     selected_articles.extend(top_10)
     selected_articles = []
     for category, category_articles in articles_by_category.items():
-        sorted_articles = sorted(category_articles, key=lambda x: x.sentiment_score, reverse=True)
-        top_10 = sorted_articles[:max_articles]
-        selected_articles.extend(top_10)
+        if category_articles and len(category_articles) > 1:
+            chosen = scraper.llm_analyzer.select_top_articles_with_llm(
+                category=category,
+                articles=category_articles,
+                max_selected=4
+            )
+            selected_articles.extend(chosen)
+        elif category_articles:
+            selected_articles.extend(category_articles[:max_articles])
 
+    print(f"Selected {len(selected_articles)} articles for personality generation out of {len(articles)} total articles."
+    )
+    # exit(0)
     # Now generate personality text only for the selected ones
     presentations = scraper.present_news_without_personality(selected_articles, personality)
 
@@ -1063,7 +1111,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
                 "title": article.title,
                 "summary": article.summary,
                 "content": article.content,
-                "embedding": article.embedding,
+                # "embedding": article.embedding,
                 "url": article.url,
                 "source": article.source,
                 "published": article.published.strftime("%Y-%m-%d"),
