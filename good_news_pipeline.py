@@ -20,13 +20,13 @@ from cloudflare import Cloudflare
 from collections import defaultdict
 import deepl
 from bs4 import BeautifulSoup
-from newspaper import Article
+from newspaper import Article, network, Config
 import numpy as np
 from deep_translator import GoogleTranslator
-from newspaper import network
+import csv
+from collections import defaultdict
 
 # network.USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-from newspaper import Config
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
 
@@ -47,8 +47,7 @@ def extract_full_article(url):
     except Exception as e:
         print(f"Failed to extract article with newspappers from {url}: {e}")
         return extract_full_article_fallback(url)
-    #     print(f"Failed to extract article from {url}")
-    #     return ""
+
 
 def extract_full_article_fallback(url):
     headers = {
@@ -96,7 +95,6 @@ def normalize_text(text: str) -> str:
     return " ".join(text.strip().split()).lower()
 
 
-
 def cosine_similarity(a, b):
     return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
 
@@ -135,6 +133,54 @@ class LLMAnalyzer:
         self.cf_client = Cloudflare(api_token=cf_api_token) if cf_api_token else None
         self.cf_account_id = cf_account_id if cf_account_id else None
         
+        self._token_rows = []  # per-call rows
+        self._token_totals = defaultdict(int)  # prompt/completion/total across the run
+        self._token_csv_path = "public/data/token_usage.csv"  # change path if you prefer
+
+    def _log_usage(self, stage: str, response, model: str = None):
+        """Record prompt/completion/total tokens from an OpenAI response."""
+        usage = getattr(response, "usage", None)
+        if not usage:
+            return
+        pt = getattr(usage, "prompt_tokens", 0) or 0
+        ct = getattr(usage, "completion_tokens", 0) or 0
+        tt = getattr(usage, "total_tokens", 0) or (pt + ct)
+
+        self._token_rows.append({
+            "timestamp": datetime.now().isoformat(timespec="seconds") + "Z",
+            "stage": stage,
+            "model": model or self.model,
+            "prompt_tokens": pt,
+            "completion_tokens": ct,
+            "total_tokens": tt,
+        })
+
+        self._token_totals["prompt_tokens"] += pt
+        self._token_totals["completion_tokens"] += ct
+        self._token_totals["total_tokens"] += tt
+
+    def save_token_csv(self, path: Optional[str] = None):
+        """Append all collected rows + a RUN_TOTAL line to a CSV."""
+        path = path or self._token_csv_path
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        header = ["timestamp", "stage", "model", "prompt_tokens", "completion_tokens", "total_tokens"]
+        need_header = not os.path.exists(path) or os.path.getsize(path) == 0
+        with open(path, "a", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=header)
+            if need_header:
+                w.writeheader()
+            for row in self._token_rows:
+                w.writerow(row)
+            # add one summary row
+            w.writerow({
+                "timestamp": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+                "stage": "RUN_TOTAL",
+                "model": "",
+                "prompt_tokens": self._token_totals["prompt_tokens"],
+                "completion_tokens": self._token_totals["completion_tokens"],
+                "total_tokens": self._token_totals["total_tokens"],
+            })
+
     def get_embedding(self, text: str):
         # print("Generating embedding for text:", text[:50], "...")
         try:
@@ -142,6 +188,7 @@ class LLMAnalyzer:
                 input=text,
                 model="text-embedding-3-small"
             )
+            self._log_usage("embeddings", response, model="text-embedding-3-small")
             # print("Generated embedding for text")
 
             return response.data[0].embedding
@@ -160,7 +207,7 @@ class LLMAnalyzer:
 
         ### STEP 1: Should this article be discarded?
         Mark the article as `"is_good_news": false` and assign a **sentiment_score of 0.0** if **any** of the following apply:
-        - The content is **very short** (e.g. headline only, no real substance)
+        - The content is only a headline.
         - There is **not enough context** to understand the story
         - It is **not a news article** (e.g. a notice, gallery, event, or social post)
         - It refers only to an **image**, **video**, or **multimedia content**
@@ -220,6 +267,7 @@ class LLMAnalyzer:
         ### 🔎 ARTICLE
         TITLE: {title}
         SUMMARY: {summary}
+        Content: {content[:10000]}  # Limit to 10000 characters to avoid too long prompts
         """
         
         if self.client:
@@ -231,14 +279,12 @@ class LLMAnalyzer:
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.3,
-                max_tokens=300
+                max_tokens=500
             )
-            
+            self._log_usage("sentiment", response)
             result = json5.loads(response.choices[0].message.content)
             return result
-            # except Exception as e:
-            #     print(f"LLM Analysis Error: {e}")
-            #     return self._fallback_analysis(title, content)
+
         else:
             return prompt
     
@@ -333,7 +379,7 @@ class LLMAnalyzer:
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.7,
-                    max_tokens=250
+                    max_tokens=350
                 )
                 
                 return response.choices[0].message.content.strip()
@@ -494,7 +540,7 @@ class LLMAnalyzer:
 
         NEWS TITLE: {article.title}
         NEWS SUMMARY: {article.summary}
-        NEWS CONTENT: {article.content[:2000]}
+        NEWS CONTENT: {article.content[:10000]}
         POSITIVE ELEMENTS: {article.reasoning}
         """
 
@@ -513,6 +559,7 @@ class LLMAnalyzer:
                 
                 content = response.choices[0].message.content.strip()
                 print(content)
+                self._log_usage("final_summary_en", response)
                 if content.startswith("```"):
                     content = content.split("\n", 1)[1]
                     content = content.rsplit("```", 1)[0]
@@ -634,8 +681,9 @@ class LLMAnalyzer:
                         {"role": "user", "content": prompt}
                     ],
                     temperature=0.7,
-                    max_tokens=200
+                    max_tokens=500
                 )
+                self._log_usage("category_summary", response)
                 return response.choices[0].message.content.strip()
             except Exception as e:
                 print(f"Category summary error: {e}")
@@ -649,24 +697,27 @@ class GoodNewsScraper:
         
         self.news_sources = [
             # Global general news
-            # "https://feeds.bbci.co.uk/news/rss.xml",
+            "https://feeds.bbci.co.uk/news/rss.xml",
             "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
             "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
             "https://www.sciencedaily.com/rss/top.xml",
-            # "https://www.nature.com/nature.rss",
+            "https://www.nature.com/nature.rss",
             "https://feeds.feedburner.com/ConservationInternationalBlog",
             "https://www.nasa.gov/rss/dyn/breaking_news.rss",
             "http://earth911.com/feed/",
             "https://grist.org/feed/",
             "https://www.hrw.org/rss/news",
-            "https://www.hhrjournal.org/category/blog/feed/",
             "https://www.newscientist.com/feed/home/?cmpid=RSS%7CNSNS-Home",
             "https://www.france24.com/en/earth/rss",
             "https://www.france24.com/en/culture/rss",
             "https://www.france24.com/en/earth/rss",
             "https://www.france24.com/en/health/rss",
             "https://www.optimistdaily.com/feed/",
-            "https://www.thisiscolossal.com/feed/"
+            "https://www.europarl.europa.eu/rss/doc/press-releases/en.xml",
+            "https://news.un.org/feed/subscribe/en/news/all/rss.xml",
+            "https://globalvoices.org/feed/",
+            "https://europeannewsroom.com/feed/",
+            "https://www.copernicus.eu/news/rss"
         ]
 
         self.previous_articles = self.load_previous_articles()
@@ -765,13 +816,17 @@ class GoodNewsScraper:
                         try:
                             published_date = datetime(*article_data["published"][:6])
                         except (TypeError, ValueError):
+                            print("Invalid published date format, using current date instead:")
                             published_date = datetime.now()
-
+                    print(f"🤖 Analyzing: {article_data['title'][:50]}, published on {published_date}...")
+                    
                     # Check if article is recent enough BEFORE analysis
                     if not self.is_recent_article(published_date, 1):
+                        print(f"Skipping article published on {published_date} (not recent enough)")
                         continue
                     # 1. Skip video articles
                     if "/av/" in article_data["link"] or "video" in article_data["link"]:
+                        print("Skipping video article")
                         continue
 
                     # 2. Skip if title or url was used already
@@ -779,10 +834,12 @@ class GoodNewsScraper:
                     url = article_data["link"]
                     if(len(self.previous_articles)>1):
                         if any(p["title"] == title_lc or p["url"] == url for p in self.previous_articles):
+                            print("Skipping duplicate article based on previous articles")
                             continue
                     
                     if(len(all_articles)>1):
                         if any(p.title == title_lc or p.url == url for p in all_articles):
+                            print("Skipping duplicate article based on all articles")
                             continue
 
                     # Generate safe filename
@@ -824,7 +881,7 @@ class GoodNewsScraper:
                     #         continue
                     
                     # Analyze with LLM
-                    print(f"🤖 Analyzing: {article_data['title'][:50]}...")
+                    print(f"🤖 Analyzing news sentiment")
                     analysis = self.llm_analyzer.analyze_news_sentiment(
                         article_data["title"],
                         article_data["summary"],
@@ -850,8 +907,8 @@ class GoodNewsScraper:
                         
                         all_articles.append(article)
                         print(f"✅ Good news found in {analysis['category']}! Score: {analysis['sentiment_score']:.2f}")
-                    # else:
-                    #     print(f"❌ Not good news: {analysis['reasoning']}")
+                    else:
+                        print(f"❌ Not good news: {analysis['reasoning']}")
                         
                 except Exception as e:
                     print(f"Error analyzing article: {e}")
@@ -881,7 +938,7 @@ class GoodNewsScraper:
         """Generate personality-based presentations with title + text"""
         presentations = []
         
-        print(f"🎭 Generating {personality} presentations...")
+        print(f"🎭 Generating {len(articles)} presentations...")
         
         for i, article in enumerate(articles, 1):
             print(f"🎪 Creating presentation {i}/{len(articles)}...")
@@ -914,7 +971,6 @@ def translate_text_deepl(text, deepl_key, target_lang="FR"):
     result = translator.translate_text(protect, target_lang=target_lang)
     translated = restore_bold_sections(result.text)
     return translated
-
 
 def translate_text_google(text, target_lang, source_lang="en"):
 
@@ -1029,7 +1085,7 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
     for category, articles in results_by_category.items():
         if not articles:
             continue
-        # Limit to 10 articles per category
+        #Limit to 10 articles per category
         articles = articles[:max_articles]
         summary_en = scraper.llm_analyzer.generate_category_summary(articles, category)
         summary_fr = translate_text_deepl(summary_en, deepl_api_key, target_lang="FR")
@@ -1048,5 +1104,10 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
         
         print(f"✅ Saved: {filename}")
 
+    try:
+        scraper.llm_analyzer.save_token_csv()
+        print("Token usage written to:", scraper.llm_analyzer._token_csv_path)
+    except Exception as e:
+        print("Token CSV save error:", e)
 
     return results_by_category
