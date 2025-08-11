@@ -247,7 +247,7 @@ class LLMAnalyzer:
         - Health crises or disease outbreaks
         - Political scandals, layoffs, protests
         - Celebrity gossip, corporate controversy
-        - Anything related to TRUMP
+        - Anything related to TRUMP or Elon MUSK 
 
         ---
 
@@ -668,6 +668,8 @@ class LLMAnalyzer:
             }
             for i, a in enumerate(articles)
         ]
+        print(f"Selecting top articles for category '{category}' with {len(articles)} candidates...")
+        print("Article titles:", [a.title for a in articles])  # Show first 5 titles for debugging
 
         prompt = f"""
             You are selecting the {max_selected} best inspiring news stories for the category "{category}".
@@ -679,9 +681,9 @@ class LLMAnalyzer:
             Rules for selection:
             1. Only select **original** stories — never pick two with the same `dedupe_key`.
             2. Favor **happiness potential**: inspiring human actions, breakthroughs, community efforts, environmental wins, impactful discoveries.
-            3. Ensure **diversity**: do not select very similar topics if others are available.
-            4. Avoid niche, irrelevant, or book promotions.
-            5. Higher sentiment_score is better, but originality and happiness potential matter more.
+            3. Ensure **diversity** of topics.
+            4. Avoid niche, irrelevant, book, product or specific company promotions (e.g Tesla).
+            5. Higher sentiment_score is better.
 
             Return strictly a JSON list of `index` values (integers) for the {max_selected} chosen articles.
 
