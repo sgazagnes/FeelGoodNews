@@ -198,58 +198,69 @@ class LLMAnalyzer:
             print(f"Embedding error: {e}")
             return None
         
-    def analyze_news_sentiment(self, title: str, summary:str, content: str) -> Dict:
+
+    def analyze_news_sentiment(self, title: str, summary: str, content: str) -> Dict:
         """Analyze if news is positive and get sentiment score using LLM"""
         
         #CONTENT: {content}
-        prompt = f"""
+        prompt_system = f"""
         You are a news filter trained to detect genuinely **inspiring good news** — stories that would make most people feel **hopeful, emotionally uplifted, or curious**.
 
-        ---
+        Your task is to analyze the provided news article and determine if it qualifies as good news, and if so, assign a sentiment score and category.
 
-        ### STEP 1: Mark the article as `"is_good_news": false` and assign a **sentiment_score of 0.0** if **any** of the following apply:
-        - There is **not enough context or content** to understand the story
-        - It is **not a news article** (e.g. a notice, gallery, event, or social post)
-        - It refers to am **image**, **video**, or **multimedia content**
-        - It refers to a guide, **how-to**, **tutorial**, or list of resources that is not a news story
-        - It refers to a weather change, for example "it will be sunny tomorrow or next week"
+       GOOD NEWS (High Sentiment Score)
 
-        ---
+        A news article qualifies only if all three of these are true:
 
-        ### STEP 2: Sentiment and Categorization
-        If the article is valid, assign a sentiment score on a scale from **0.00 to 1.00**:
+            - Positive real-world impact — the story reports an actual event, policy, discovery, or action that is inspiring (e.g space exploration) or brings measurable, tangible, or large-scale benefits to people, society, or the environment.
 
-        - **1.00** = deeply positive, emotionally moving, highly inspiring, impactful, original and captivating
-        - **0.00** = neutral, irrelevant, negative, too niche, or unengaging
+            - Significance & Scope — the impact is broad or meaningful for the general public, not just for a small niche, a celebrity, or a private company.
 
-        It is important to focus on the positive impact of the story, and the potential impact it can have on the general reader mood.
+            - Substance — the article is focused on a single topic and contains enough context and details to clearly describe the achievement, breakthrough, or positive change.
+
+        Examples:
+
+            - Major breakthroughs in health, science, technology, or education that can improve lives.
+
+            - Significant progress in climate action, conservation, or renewable energy.
+
+            Large-scale recovery, rebuilding, or humanitarian aid that benefits communities.
+
+            - Major economic or human rights policies that improve quality of life for many people.
+
+            - Uplifting nature or animal stories with substantial conservation or welfare impact.
+
+        NOT GOOD NEWS (Low Sentiment Score)
+
+        The article should be classified as not good news if any of these apply:
+
+            - Trivial or low-impact — event has little or no meaningful effect on the general public (e.g., “NASA invites media to see a rocket,” “Taylor Swift releases new album,” “Company launches a new gadget without wider societal benefit”).
+
+            - Celebrity, sports, entertainment, or PR — unless it has a large-scale humanitarian or societal benefit.
+
+            - Corporate promotions or partnerships — unless it represents a breakthrough or major benefit beyond the company.
+
+            - Insufficient context — the article is vague, incomplete, or does not describe the event’s impact.
+
+            - Not a real news story — social posts, galleries, weather forecasts, guides, tutorials, podcasts, listicles, digests, or rankings.
+
+            - Negative or harmful events — crime, violence, disasters, scandals, political fights.
+
+            - Purely descriptive space/NASA/tech updates without clear societal benefit (e.g., “launch scheduled,” “contract signed,” “media invited”).
+            
+            - The article does not focus on a single main story.
+
+            - The details on the news are too small.
         
         Assign a **category**, choosing exactly one from this list:
-        - Health
-        - Environment
-        - Technology
-        - Human Rights
+        - Health 
+        - Environment (climate action, conservation, renewable energy)
+        - Technology (e.g. breakthroughs, discoveries, innovations)
+        - Human Rights (e.g. equality, freedom, justice)
         - Space
-        - Other
-        Do **not invent other categories**.
+        - Other (if it does not fit any of the above categories, e.g. cultural stories, positive community initiatives, single events that are not related to the above categories)
 
-        ---
-
-        ### Good news examples:
-        - Acts of kindness, community help, recovery stories
-        - Breakthroughs in health, science, tech, education
-        - Progress in climate action or conservation
-        - Uplifting animal or nature stories
-        - Economic or human rights policies that benefit general people
-
-        ### Not good news:
-        - Crime, violence, conflict, disasters
-        - Health crises or disease outbreaks
-        - Political scandals, layoffs, protests
-        - Celebrity gossip, corporate controversy
-        - Anything related to TRUMP or Elon MUSK 
-
-        ---
+        Do **not invent or use any other categories**. USE ONLY THESE.
 
         ### Respond only in this JSON format (no markdown, no extra commentary):
 
@@ -262,10 +273,10 @@ class LLMAnalyzer:
         "dedupe_key": "≤10-word noun phrase uniquely identifying this story",
         }}
 
+        """
+        prompt_user = f"""
 
-        ---
-
-        ### 🔎 ARTICLE
+        This is the article to analyze:
         TITLE: {title}
         SUMMARY: {summary}
         Content: {content}
@@ -276,10 +287,10 @@ class LLMAnalyzer:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": "You are an expert at analyzing news sentiment and identifying positive, uplifting stories."},
-                    {"role": "user", "content": prompt}
+                    {"role": "system", "content": prompt_system},
+                    {"role": "user", "content": prompt_user}
                 ],
-                temperature=0.4,
+                temperature=0.3,
                 max_tokens=2000
             )
             self._log_usage("sentiment", response)
@@ -287,8 +298,47 @@ class LLMAnalyzer:
             return result
 
         else:
-            return prompt
+            return prompt_user
     
+
+    def preanalyze_news_sentiment(self, title: str, summary:str) -> Dict:
+        """Pre-analyze news title positivity"""
+
+        #CONTENT: {content}
+        prompt_system = f"""
+        You are a news filter trained to detect genuinely **inspiring good news** — stories that would make most people feel **hopeful, emotionally uplifted, or curious**, using just the news title.
+
+        Your task is to analyze the provided news article title and summary and determine whether it could be a good news. You should return 1 if you think it is a good news, and 0 if it is not. If you are not sure, return 1, as a better analysis will be done after.
+
+        Good news should refer to positive real-world impact — the story reports an actual event, policy, discovery, or action that brings measurable, tangible, or large-scale benefits to people, society, or the environment, such as  breakthroughs in health, technology, energy, education, climate change...
+
+        The article title should be classified as bad news if it concerns crimes, violence, disasters, scandals, political fights, Trump, Musk, celebrity gossip, weather forecasts or other negative events.
+
+        If uncertain, output 1, as full analysis will happen later.
+
+        Output nothing except the digit 0 or 1.
+        """
+
+        prompt_user = f"""
+        TITLE: {title}
+        SUMMARY: {summary[:100]}
+        """
+
+        if self.client:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": prompt_system},
+                    {"role": "user", "content": prompt_user}
+                ],
+                temperature=0.3,
+                max_tokens=100
+            )
+            self._log_usage("pre_sentiment", response)
+            print("Preanalyze response:", response.choices[0].message.content.strip())
+            return int(response.choices[0].message.content.strip())
+        else:
+            return 0
     
     def generate_image_prompt(self, article: NewsArticle) -> str:
         """Generate DALL-E image prompt based on article content"""
@@ -344,7 +394,7 @@ class LLMAnalyzer:
                         {"role": "system", "content": "You are an expert at creating detailed, positive image prompts for LLMs."},
                         {"role": "user", "content": prompt}
                     ],
-                    temperature=0.7,
+                    temperature=0.5,
                     max_tokens=350
                 )
                 
@@ -469,10 +519,10 @@ class LLMAnalyzer:
         """Generate news presentation using LLM"""
         
         
-        prompt = f"""
-        You're a journalist with a talent for storytelling and clarity. Write a compelling, **structured news summary** for this positive story, designed to **inform and inspire** — without exaggeration, repetition, or fluff.
+        prompt_system = f"""
+        You're a journalist with a talent for storytelling and clarity. Write a compelling, **structured news summary** for this positive story, designed to **inform and inspire** — without exaggeration, repetition, or fluff. Your stories are enjoyable to read, not just informative.
 
-        Write in **simple, clear language** that anyone can understand — no jargon or assumptions of prior knowledge. Avoid generic inspirational phrases like “this is great for humanity” or “this brings hope to the world.” Every sentence should add meaningful information or explanation. Focus on clarity, substance, and accessibility, use examples if needed to convey the message.
+        Write in **simple, clear language** that anyone can understand — no jargon or assumptions of prior knowledge. Avoid generic inspirational phrases like “this is great for humanity” or “this brings hope to the world.” Every sentence should add meaningful information or explanation. Focus on clarity, substance, and accessibility, use examples if needed to convey the message. YOUR STORY AND ITS CONTENT MUST BE UNDERSTANDABLE BY A 12-YEAR-OLD.
 
         Follow this structure, and **start each section title in bold with double asterisks** and normal capitalization (not all caps):
 
@@ -482,7 +532,7 @@ class LLMAnalyzer:
         **What's next step** – What will happen next or what this might lead to  
         **One-sentence takeaway** – Summarize the essence in a single, informative line
 
-        Keep the tone warm but professional. **Avoid repetition across sections**. Introduce the acronyms clearly when they first appear.
+        **Avoid repetition across sections**. Introduce the acronyms clearly when they first appear.
 
         Create an original and natural-sounding headline — short, informative, and attention-grabbing, but not clickbait.
 
@@ -501,7 +551,8 @@ class LLMAnalyzer:
         }}
 
         Do not include markdown, comments, or explanations.
-
+        """
+        prompt_user = f"""
         Here is the article:
 
         NEWS TITLE: {article.title}
@@ -516,10 +567,10 @@ class LLMAnalyzer:
                 response = self.client.chat.completions.create(
                  model=self.model,
                     messages=[
-                        {"role": "system", "content": f" You are a journalist specializing in positive news stories. You excel at simplifying complex topics and making them engaging and easy to understand. Your audience consists of busy people who only have a few minutes each day to stay informed. Your goal is to convey the most important details clearly, in a warm, and easy-to-read style."},
-                        {"role": "user", "content": prompt}
+                        {"role": "system", "content": prompt_system},
+                        {"role": "user", "content": prompt_user}
                     ],
-                    temperature=0.8,
+                    temperature=0.6,
                     max_tokens=2000
                 )
                 
@@ -542,6 +593,8 @@ class LLMAnalyzer:
                 return None
         else:
             return None
+        
+
     def generate_personality_response(self, article: NewsArticle, personality: str) -> str:
         """Generate personality-based news presentation using LLM"""
         
@@ -678,12 +731,13 @@ class LLMAnalyzer:
             - `dedupe_key`: short unique ID to detect duplicates
             - `sentiment_score`: from 0.0 to 1.0, higher means more positive
 
+            Your role is to make sure that no news story is repeated, and that the selected stories have the best sentiment score.
+
             Rules for selection:
-            1. Only select **original** stories — never pick two with the same `dedupe_key`.
-            2. Favor **happiness potential**: inspiring human actions, breakthroughs, community efforts, environmental wins, impactful discoveries.
-            3. Ensure **diversity** of topics.
-            4. Avoid niche, irrelevant, book, product or specific company promotions (e.g Tesla).
-            5. Higher sentiment_score is better.
+            1. Higher sentiment_score is better.
+            2. Favor unique stories: if two `dedupe_key` keys are too similar, select only one.
+            3. If there are more than {max_selected} candidates with the highest sentiment score, prioritize **diversity** of topics.
+
 
             Return strictly a JSON list of `index` values (integers) for the {max_selected} chosen articles.
 
@@ -730,8 +784,8 @@ class GoodNewsScraper:
         self.news_sources = [
             # Global general news
             "https://feeds.bbci.co.uk/news/rss.xml",
-            "https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk",
-            "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk",
+            "https://feeds.bbci.co.uk/news/technology/rss.xml",
+            "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
             "https://www.sciencedaily.com/rss/top.xml",
             "https://www.nature.com/nature.rss",
             "https://feeds.feedburner.com/ConservationInternationalBlog",
@@ -879,9 +933,9 @@ class GoodNewsScraper:
                     safe_title = re.sub(r'[-\s]+', '-', safe_title)[:50]
                     filename = f"public/images/news_image_{safe_title}.png"
 
-                    if os.path.exists(filename):
-                        print(f"✅ Image already exists: {filename}")
-                        continue
+                    # if os.path.exists(filename):
+                    #     print(f"✅ Image already exists: {filename}")
+                    #     continue
 
                     # embedding = self.llm_analyzer.get_embedding(article_data["summary"])
                     # to_pass = False
@@ -914,6 +968,14 @@ class GoodNewsScraper:
                     
                     # Analyze with LLM
                     # print(f"🤖 Analyzing news sentiment")
+                    pre_analysis = self.llm_analyzer.preanalyze_news_sentiment(
+                        article_data["title"],
+                        article_data["summary"]
+                    )
+                    if pre_analysis == 0:
+                        print("Skipping article based on pre-analysis (not good news)")
+                        continue
+                    
                     analysis = self.llm_analyzer.analyze_news_sentiment(
                         article_data["title"],
                         article_data["summary"],
@@ -940,7 +1002,7 @@ class GoodNewsScraper:
 
     
                         all_articles.append(article)
-                        print(f"✅ Good news found in {analysis['category']}! Score: {analysis['sentiment_score']:.2f}")
+                        print(f"✅ Good news found in {analysis['category']}! Score: {analysis['sentiment_score']:.2f}, reasoning: {analysis['reasoning']}")
                     else:
                         print(f"❌ Not good news: {analysis['reasoning']}")
                         
