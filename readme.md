@@ -4,6 +4,7 @@ FeelGoodNews is a Python application that automatically fetches science and tech
 
 **The goal: bring more good news to people's daily feeds.**
 
+This is now available as a mobile app for Android users! https://play.google.com/store/apps/details?id=com.simongazagnes.feelgoodnews&hl=en_US
 ---
 
 ## ✨ Features
@@ -16,19 +17,11 @@ FeelGoodNews is a Python application that automatically fetches science and tech
   - Categorizes the article
   - Provides reasoning and key positive elements
 - 🎨 **Image Generation**
-  - Creates custom prompts for AI image generators (DALL·E or Cloudflare Workers AI)
-  - Saves images locally
-- 🗣️ **Personality Presentations**
-  - Summarizes stories in different character styles (e.g., Darth Vader, Shakespeare)
-- 🗂️ **Daily Output**
-  - Saves results in JSON files by category
-  - Includes text, images, and metadata
-- ⏰ **Time Filtering**
-  - Processes only articles published in the last day
+  - Creates custom prompts for AI image generators
 
 ---
 
-## 🛠️ Installation
+## 🛠️ Installation for local use
 
 1. Clone this repository:
 ```bash
@@ -111,20 +104,6 @@ Each JSON file includes:
 - Generated summaries
 - Image prompt & saved image path
 
----
-
-## 🎭 Personalities
-
-FeelGoodNews supports multiple "presentation styles" defined in:
-`public/data/personalities.json`
-
-**Examples:**
-- `darth_vader`
-- `shakespeare`
-- `gordon_ramsay`
-- `drunk_philosopher`
-
----
 
 ## 📄 License
 
