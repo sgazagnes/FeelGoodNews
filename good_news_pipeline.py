@@ -1200,8 +1200,16 @@ def generate_daily_good_news(openai_api_key, use_dall_e, cf_api_token, cf_accoun
         #Limit to 10 articles per category
         articles = articles[:max_articles]
         summary_en = scraper.llm_analyzer.generate_category_summary(articles, category)
-        summary_fr = translate_text_deepl(summary_en, deepl_api_key, target_lang="FR")
-        summary_es = translate_text_deepl(summary_en, deepl_api_key, target_lang="ES")
+        try:
+            summary_fr = translate_text_deepl(summary_en, deepl_api_key, target_lang="FR")
+        except Exception as e:  
+            print("Translation to French error:", e)
+            summary_fr = ""
+        try:
+            summary_es = translate_text_deepl(summary_en, deepl_api_key, target_lang="ES")
+        except Exception as e:
+            print("Translation to Spanish error:", e)
+            summary_es = ""
         filename = f"public/data/{datetime.now().strftime('%Y-%m-%d')}_{category.lower().replace(' ', '_')}.json"
         with open(filename, "w", encoding="utf-8") as f:
             json.dump({

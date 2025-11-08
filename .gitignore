@@ -5,3 +5,4 @@ __pycache__
 updatejson.py
 translate_test.py
 test_duplicates.py
+test.py
