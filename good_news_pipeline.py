@@ -427,9 +427,9 @@ class LLMAnalyzer:
                 "@cf/black-forest-labs/flux-1-schnell",
                 account_id=self.cf_account_id,
                 prompt=prompt,
-            ).json()
+            )
 
-            image_base64 = data["result"]["image"]
+            image_base64 = data["image"]
 
             # Decode base64 to bytes
             image_bytes = base64.b64decode(image_base64)
