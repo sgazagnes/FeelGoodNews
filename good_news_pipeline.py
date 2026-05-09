@@ -423,7 +423,7 @@ class LLMAnalyzer:
 
         # If not, generate the image
         try:
-            data = self.cf_client.ai.with_raw_response.run(
+            data = self.cf_client.ai.run(
                 "@cf/black-forest-labs/flux-1-schnell",
                 account_id=self.cf_account_id,
                 prompt=prompt,
