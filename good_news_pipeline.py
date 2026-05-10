@@ -422,36 +422,37 @@ class LLMAnalyzer:
             return filename
 
         # If not, generate the image
-        try:
-            data = self.cf_client.ai.run(
-                "@cf/black-forest-labs/flux-1-schnell",
-                account_id=self.cf_account_id,
-                prompt=prompt,
-            )
+        print(f"🎨 Generating image with prompt: {prompt[:200]}...")
+        # try:
+        data = self.cf_client.ai.run(
+            "@cf/black-forest-labs/flux-1-schnell",
+            account_id=self.cf_account_id,
+            prompt=prompt,
+        )
 
-            image_base64 = data["image"]
+        image_base64 = data["image"]
 
-            # Decode base64 to bytes
-            image_bytes = base64.b64decode(image_base64)
+        # Decode base64 to bytes
+        image_bytes = base64.b64decode(image_base64)
 
-            # Load image into PIL
-            image = Image.open(BytesIO(image_bytes))
+        # Load image into PIL
+        image = Image.open(BytesIO(image_bytes))
 
-            # Resize to 512x512
-            image_resized = image.resize((512, 512), Image.LANCZOS)
+        # Resize to 512x512
+        image_resized = image.resize((512, 512), Image.LANCZOS)
 
-            # Ensure directory exists
-            os.makedirs(os.path.dirname(filename), exist_ok=True)
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-            # Save resized image
-            image_resized.save(filename, format="PNG")
+        # Save resized image
+        image_resized.save(filename, format="PNG")
 
-            print(f"✅ Image saved to: {filename}")
-            return filename
+        print(f"✅ Image saved to: {filename}")
+        return filename
 
-        except Exception as e:
-            print(f"Error generating image: {e}")
-            return None
+        # except Exception as e:
+        #     print(f"Error generating image: {e}")
+        #     return None
 
 
 
