@@ -3,7 +3,7 @@ feedparser
 json5
 openai
 pillow
-cloudflare
+cloudflare==4.3.1
 deepl
 beautifulsoup4
 newspaper3k
