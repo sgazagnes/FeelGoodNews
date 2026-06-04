@@ -5,6 +5,7 @@ FeelGoodNews is a Python application that automatically fetches science and tech
 **The goal: bring more good news to people's daily feeds.**
 
 This is now available as a mobile app for Android users! https://play.google.com/store/apps/details?id=com.simongazagnes.feelgoodnews&hl=en_US
+
 ---
 
 ## ✨ Features
