@@ -8,7 +8,7 @@ This is now available as a mobile app for Android users! https://play.google.com
 
 ---
 
-## ✨ Features
+##  Features
 
 - 📰 **RSS Scraper**
   - Fetches articles from selected science and environment feeds (e.g., ScienceDaily)
@@ -22,7 +22,7 @@ This is now available as a mobile app for Android users! https://play.google.com
 
 ---
 
-## 🛠️ Installation for local use
+##  Installation for local use
 
 1. Clone this repository:
 ```bash
@@ -46,7 +46,7 @@ Dependencies include:
 
 ---
 
-## ⚙️ Configuration
+##  Configuration
 
 The app requires API keys for:
 - OpenAI API (text analysis and optional DALL·E images)
@@ -76,7 +76,7 @@ generate_daily_good_news(
 
 ---
 
-## 🚀 Usage
+##  Usage
 
 The main entry point is the `generate_daily_good_news()` function.
 
@@ -106,6 +106,6 @@ Each JSON file includes:
 - Image prompt & saved image path
 
 
-## 📄 License
+##  License
 
 MIT License. See LICENSE.
