@@ -1,0 +1,29 @@
+{
+  "personality": null,
+  "timestamp": "2026-06-29T09:07:18.228485",
+  "category": "Other",
+  "news_summary": "A mother's determination to protect her newborn inspired her survival amid challenging circumstances in Venezuela.",
+  "news_summary_fr": "La détermination d'une mère à protéger son nouveau-né lui a permis de s'en sortir malgré les conditions difficiles au Venezuela.",
+  "news_summary_es": "La determinación de una madre por proteger a su recién nacido le permitió sobrevivir en medio de las difíciles circunstancias que se viven en Venezuela.",
+  "articles": [
+    {
+      "title": "Mum of newborn rescued from Venezuela rubble says baby motivated her to stay alive",
+      "summary": "The \"miracle\" rescue of 18-day-old baby Juan David is a symbol of hope in Venezuela after the devastating earthquakes.",
+      "content": "A mother who was pulled from the rubble of her wrecked home in Venezuela with her 18-day-old baby has told the BBC of how her son helped keep her alive.\n\nDayana Patino said her son Juan David gave her \"motivation to be awake and alert\".\n\n\"As long as he was alive, I was going to be alive. Every now and then I was touching his nose for proof that he was still breathing,\" she said.\n\nFootage of the rescue has been shared around the world, with Juan David becoming a symbol of hope in Venezuela, which has been devastated by the twin earthquakes that hit the country on Wednesday - killing at least 1,450 people.",
+      "url": "https://www.bbc.co.uk/news/articles/clyw3rkj2p7o?at_medium=RSS&at_campaign=rss",
+      "source": "BBC News",
+      "published": "2026-06-29",
+      "sentiment_score": 0.7,
+      "reasoning": "The story highlights a miraculous rescue that serves as a powerful symbol of hope and resilience for a nation devastated by natural disaster, providing emotional uplift and inspiration to a broad audience.",
+      "category": "Other",
+      "personality_title": "Newborn baby’s rescue from Venezuela earthquake rubble inspires hope",
+      "personality_presentation": "**Context** – Venezuela was hit by two strong earthquakes that destroyed homes and caused many deaths.\n\n**What happened** – Dayana Patino and her 18-day-old baby, Juan David, were trapped under the rubble of their home. Rescuers saved them, and Dayana said her baby gave her the strength to stay awake and alive by reminding her he was breathing.\n\n**Impact** – This rescue is seen as a rare and hopeful moment amid the tragedy. Juan David’s survival has become a symbol of courage and resilience for people in Venezuela, showing that even in hard times, life and hope can continue.\n\n**What's next step** – The story encourages rescue teams and communities to keep working together after the disaster. It also offers comfort to families affected, reminding them that help and survival are possible.\n\n**One-sentence takeaway** – A newborn’s survival after Venezuela’s earthquakes has become a powerful sign of hope and strength for the country.",
+      "personality_title_fr": "Le sauvetage d’un nouveau-né dans les décombres au Venezuela inspire l’espoir",
+      "personality_presentation_fr": "**Contexte** – Le Venezuela a été frappé par deux forts tremblements de terre qui ont détruit des maisons et causé de nombreuses morts.\n\n**Ce qui s’est passé** – Dayana Patino et son bébé de 18 jours, Juan David, ont été coincés sous les décombres de leur maison. Les sauveteurs les ont secourus, et Dayana a dit que son bébé lui donnait la force de rester éveillée et en vie en lui rappelant qu’il respirait.\n\n**Impact** – Ce sauvetage est vu comme un moment rare et plein d’espoir au milieu de la tragédie. La survie de Juan David est devenue un symbole de courage et de résilience pour le peuple vénézuélien, montrant que même dans les moments difficiles, la vie et l’espoir continuent.\n\n**Prochaine étape** – Cette histoire encourage les équipes de secours et les communautés à continuer de travailler ensemble après la catastrophe. Elle apporte aussi du réconfort aux familles touchées, rappelant que l’aide et la survie sont possibles.\n\n**Phrase clé** – La survie d’un nouveau-né après les tremblements de terre au Venezuela est devenue un puissant signe d’espoir et de force pour le pays.",
+      "personality_title_es": "El rescate de un recién nacido en los escombros de Venezuela inspira esperanza",
+      "personality_presentation_es": "**Contexto** – Venezuela fue golpeada por dos fuertes terremotos que destruyeron casas y causaron muchas muertes.\n\n**Qué pasó** – Dayana Patino y su bebé de 18 días, Juan David, quedaron atrapados bajo los escombros de su casa. Los rescatistas los salvaron, y Dayana dijo que su bebé le dio la fuerza para mantenerse despierta y con vida al recordarle que estaba respirando.\n\n**Impacto** – Este rescate es visto como un momento raro y lleno de esperanza en medio de la tragedia. La supervivencia de Juan David se ha convertido en un símbolo de valentía y resistencia para el pueblo venezolano, mostrando que incluso en tiempos difíciles, la vida y la esperanza continúan.\n\n**Próximo paso** – La historia anima a los equipos de rescate y a las comunidades a seguir trabajando juntos tras el desastre. También ofrece consuelo a las familias afectadas, recordándoles que la ayuda y la supervivencia son posibles.\n\n**Frase clave** – La supervivencia de un recién nacido después de los terremotos en Venezuela se ha convertido en un poderoso símbolo de esperanza y fortaleza para el país.",
+      "image_url": "public/images/news_image_Mum-of-newborn-rescued-from-Venezuela-rubble-says-.png",
+      "image_prompt": "A tender, detailed painting of a fragile newborn bird nestled safely inside a cracked but sturdy nest amidst scattered rubble, with a protective, glowing silhouette of a mother bird gently enveloping the nest, all rendered in soft, natural earth tones conveying hope and resilience."
+    }
+  ]
+}
